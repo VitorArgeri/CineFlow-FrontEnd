@@ -1,0 +1,163 @@
+.main {
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--white-color);
+    padding: 2rem;
+}
+
+.titulo {
+    font-size: 2.5rem;
+    text-align: center;
+    margin-bottom: 2rem;
+    color: var(--white-color);
+}
+
+.selecaoSessao {
+    margin-bottom: 3rem;
+}
+
+.datasContainer {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-bottom: 2rem;
+}
+
+.dataBtn {
+    background: var(--gray-color);
+    border: none;
+    padding: 0.5rem 1rem;
+    color: var(--white-color);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    min-width: 120px;
+}
+
+.dataBtn:hover {
+    transform: translateY(-2px);
+}
+
+.dataBtn.atual {
+    background-color: var(--red-color);
+}
+
+.dataBtn.selecionada {
+    background-color: var(--blue-color);
+}
+
+.dataInfo {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.dataLabel {
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+
+.dataValor {
+    font-size: 0.8rem;
+}
+
+.rating {
+    display: inline-block;
+    background-color: #ff0000;
+    color: white;
+    padding: 0.2rem 0.5rem;
+    border-radius: 4px;
+    font-weight: bold;
+}
+
+.movieDescription {
+    font-size: 1.1rem;
+    line-height: 1.6;
+    color: #ccc;
+    margin-bottom: 2rem;
+}
+
+.sessionsSection {
+    padding: 2rem;
+    background-color: #111;
+    border-radius: 8px;
+}
+
+.sectionTitle {
+    font-size: 1.8rem;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+.dateNav {
+    display: flex;
+    justify-content: center;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    flex-wrap: wrap;
+}
+
+.dateButton {
+    padding: 0.5rem 1rem;
+    border: none;
+    border-radius: 4px;
+    background-color: #333;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    text-align: center;
+    min-width: 100px;
+}
+
+.dateButton:hover {
+    background-color: #444;
+}
+
+.dateButton.active {
+    background-color: #ff0000;
+}
+
+.timeGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 1rem;
+    padding: 1rem;
+}
+
+.timeButton {
+    padding: 1rem;
+    border: 2px solid #333;
+    border-radius: 4px;
+    background-color: transparent;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-size: 1.1rem;
+}
+
+.timeButton:hover {
+    border-color: #ff0000;
+    background-color: rgba(255, 0, 0, 0.1);
+}
+
+@media (max-width: 768px) {
+    .movieCard {
+        flex-direction: column;
+    }
+
+    .movieImage {
+        width: 100%;
+        height: auto;
+        max-height: 400px;
+    }
+
+    .dateNav {
+        gap: 0.5rem;
+    }
+
+    .dateButton {
+        min-width: 80px;
+        padding: 0.4rem 0.8rem;
+    }
+}
