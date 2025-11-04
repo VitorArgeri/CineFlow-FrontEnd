@@ -1,16 +1,28 @@
-import React from 'react';
+import React from "react";
+import Link from "next/link";
+import styles from "./not-found.module.css";
 
-
-const NotFound = () => {
+export default function NotFound() {
   return (
-    <div className="not-found-container">
-      <div className="not-found-content">
-        <h1 className="not-found-title">404</h1>
-        <p className="not-found-message">Página não encontrada</p>
-        <a href="/" className="back-home-link">Voltar para a página inicial</a>
+    <div className={styles.container}>
+      
+      <div className={styles.logo}>
+        <span className={styles.cine}>Cine</span>
+        <div className={styles.glasses}>
+          <div className={styles.lensLeft}></div>
+          <div className={styles.lensRight}></div>
+        </div>
+        <span className={styles.flow}>Flow</span>
       </div>
+
+      
+      <h1 className={styles.title}>404</h1>
+      <p className={styles.subtitle}>Página não encontrada</p>
+
+      
+      <Link href="/" className={styles.button}>
+        VOLTAR PARA INÍCIO
+      </Link>
     </div>
   );
-};
-
-export default NotFound;
+}

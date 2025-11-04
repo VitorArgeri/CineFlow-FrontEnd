@@ -1,5 +1,4 @@
 
-
 .container {
   position: absolute;
   top: 0;
@@ -21,52 +20,66 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-bottom: 50px;
+  margin-bottom: 30px;
 }
 
 .cine {
   color: #ff1a1a;
-  font-size: 64px;
+  font-size: 54px;
   font-weight: 700;
 }
 
 .flow {
   color: #2b4eff;
-  font-size: 64px;
+  font-size: 54px;
   font-weight: 700;
 }
-
 
 .glasses {
   display: flex;
   justify-content: center;
   align-items: center;
   background-color: #333;
-  border-radius: 8px;
-  padding: 8px;
-  margin: 0 10px;
+  border-radius: 6px;
+  padding: 6px;
+  margin: 0 8px;
   box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
 }
 
 .lensLeft {
-  width: 30px;
-  height: 25px;
+  width: 24px;
+  height: 20px;
   background-color: #2b9fff;
-  margin-right: 6px;
+  margin-right: 4px;
   border-radius: 2px;
 }
 
 .lensRight {
-  width: 30px;
-  height: 25px;
+  width: 24px;
+  height: 20px;
   background-color: #ff2b2b;
   border-radius: 2px;
 }
 
 
+.title {
+  font-size: 80px;
+  font-weight: 800;
+  margin: 10px 0;
+  color: #ff0000;
+  text-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+}
+
+.subtitle {
+  font-size: 22px;
+  color: #bbb;
+  margin-bottom: 40px;
+}
+
+
 /* BOTÃO */
 .button {
-  background-color: #ff0000;
+  background-color: #1807FF; /* Cor azul */
   color: white;
   font-weight: 700;
   font-size: 20px;
@@ -76,40 +89,31 @@
   cursor: pointer;
   text-decoration: none;
   display: inline-block;
-  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+  box-shadow: 0 0 20px rgba(24, 7, 255, 0.6); /* Azul claro */
   transition: transform 0.2s ease, box-shadow 0.3s ease;
   
-  /* 🔥 animação */
+  /* Animação de pulsação e brilho */
   animation: pulseGlow 2s infinite;
 }
 
 /* EFEITO AO PASSAR O MOUSE */
 .button:hover {
   transform: scale(1.08);
-  box-shadow: 0 0 35px rgba(255, 0, 0, 0.9);
+  box-shadow: 0 0 35px rgba(24, 7, 255, 0.9); /* Azul mais forte */
 }
 
-/* ✨ ANIMAÇÃO DE PULSAÇÃO/BRILHO */
+/* ANIMAÇÃO DE PULSAÇÃO/BRILHO */
 @keyframes pulseGlow {
   0% {
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    box-shadow: 0 0 15px rgba(24, 7, 255, 0.6);
     transform: scale(1);
   }
   50% {
-    box-shadow: 0 0 30px rgba(255, 0, 0, 0.9);
+    box-shadow: 0 0 30px rgba(24, 7, 255, 0.9);
     transform: scale(1.05);
   }
   100% {
-    box-shadow: 0 0 15px rgba(255, 0, 0, 0.6);
+    box-shadow: 0 0 15px rgba(24, 7, 255, 0.6);
     transform: scale(1);
   }
-}
-
-
-
-.footerText {
-  margin-top: 60px;
-  font-size: 16px;
-  color: #ccc;
-  letter-spacing: 1px;
 }
