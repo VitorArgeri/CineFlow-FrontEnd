@@ -7,8 +7,8 @@ const roboto = Roboto({
 });
 
 export const metadata = {
-    title: "CineFlow Project",
-    description: "Cineflow Project",
+    title: "CineFlow",
+    description: "Cineflow",
     icons: {
         icon: "/Icons/3d-glasses.png"
     }
