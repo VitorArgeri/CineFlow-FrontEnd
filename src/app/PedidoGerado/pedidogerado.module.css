@@ -1,0 +1,140 @@
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+  
+  
+  .logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 30px;
+  }
+  
+  .cine {
+    color: #FF0000;
+    font-size: 54px;
+    font-weight: 700;
+  }
+  
+  .flow {
+    color: #2b4eff;
+    font-size: 54px;
+    font-weight: 700;
+  }
+  
+  .glasses {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    border-radius: 6px;
+    padding: 6px;
+    margin: 0 8px;
+  }
+  
+  .lensLeft {
+    width: 24px;
+    height: 20px;
+    background-color: #2b9fff;
+    margin-right: 4px;
+    border-radius: 2px;
+  }
+  
+  .lensRight {
+    width: 24px;
+    height: 20px;
+    background-color: #FF0000;
+    border-radius: 2px;
+  }
+  
+  
+  .successText {
+    font-size: 28px;
+    margin-bottom: 40px;
+    color: white;
+  }
+  
+  
+  .content {
+    display: flex;
+    justify-content: center;
+    align-items: flex-start;
+    gap: 50px;
+    flex-wrap: wrap;
+  }
+  
+  
+  .qrSection {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 15px;
+  }
+  
+  .qrButton {
+    background-color: #2b4eff;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-weight: 600;
+    padding: 12px 20px;
+    font-size: 14px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+  }
+  
+  .qrButton:hover {
+    background-color: #1e37b7;
+  }
+  
+  
+  .ticketBox {
+    background-color: #FF0000;
+    padding: 20px 40px;
+    border-radius: 10px;
+    color: white;
+    box-shadow: 0 0 15px rgba(255, 0, 0, 0.5);
+  }
+  
+  .ticketLabel {
+    color: #2b4eff;
+    font-size: 16px;
+    margin-bottom: 10px;
+    font-weight: 500;
+  }
+  
+  .ticketNumber {
+    color: #2b4eff;
+    font-size: 40px;
+    font-weight: 800;
+  }
+  
+  
+  .instructions {
+    max-width: 600px;
+    margin-top: 40px;
+    font-size: 14px;
+    color: #ccc;
+    line-height: 1.4;
+  }
+  
+ 
+  .thanks {
+    margin-top: 50px;
+    font-size: 20px;
+    color: white;
+    font-weight: 700;
+  }
+  
