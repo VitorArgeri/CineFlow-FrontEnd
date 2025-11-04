@@ -1,0 +1,273 @@
+/* Bomboniere Styles */
+.container {
+    min-height: 100vh;
+    background-color: var(--background-color);
+    color: var(--white-color);
+}
+
+/* Header Styles */
+.header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem 2rem;
+    background-color: #000;
+    border-bottom: 1px solid #333;
+}
+
+.logo {
+    display: flex;
+    align-items: center;
+}
+
+.logoText {
+    font-size: 1.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+}
+
+.cine {
+    color: var(--red-color);
+}
+
+.flow {
+    color: var(--blue-color);
+    margin-left: 0.2rem;
+}
+
+.userInfo {
+    background-color: #666;
+    padding: 0.5rem 1rem;
+    border-radius: 4px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+/* Main Content */
+.main {
+    padding: 2rem;
+}
+
+.titleSection {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.title {
+    font-size: 2rem;
+    font-weight: 700;
+    color: var(--white-color);
+    margin: 0;
+}
+
+/* Navigation Tabs */
+.nav {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    justify-content: center;
+}
+
+.navButton {
+    background: none;
+    border: none;
+    color: var(--white-color);
+    font-size: 1.1rem;
+    font-weight: 500;
+    padding: 0.5rem 1rem;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    transition: all 0.3s ease;
+}
+
+.navButton:hover {
+    color: var(--red-color);
+}
+
+.navButton.active {
+    color: var(--red-color);
+    border-bottom-color: var(--red-color);
+}
+
+/* Combos Grid */
+.combosGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.comboCard {
+    background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid #333;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.comboCard:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(255, 0, 0, 0.1);
+    border-color: var(--red-color);
+}
+
+.comboImage {
+    display: flex;
+    justify-content: center;
+    margin-bottom: 1rem;
+    height: 10rem;
+}
+
+.comboIcon {
+    font-size: 3rem;
+    background: linear-gradient(135deg, var(--red-color), var(--blue-color));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    padding: 1rem;
+    border-radius: 50%;
+    background-color: #333;
+    width: 80px;
+    height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.comboContent {
+    text-align: center;
+}
+
+.comboName {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--white-color);
+    margin: 0 0 0.5rem 0;
+    text-transform: uppercase;
+}
+
+.comboDescription {
+    color: var(--gray-color);
+    font-size: 0.9rem;
+    margin: 0 0 1.5rem 0;
+    line-height: 1.4;
+}
+
+.comboFooter {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.comboPrice {
+    font-size: 1.3rem;
+    font-weight: 700;
+    color: var(--red-color);
+}
+
+/* Quantity Controls */
+.quantityControls {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: #333;
+    border-radius: 20px;
+    padding: 0.3rem;
+}
+
+.quantityBtn {
+    width: 30px;
+    height: 30px;
+    border: none;
+    background-color: var(--red-color);
+    color: var(--white-color);
+    border-radius: 50%;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.quantityBtn:hover {
+    background-color: #cc0000;
+    transform: scale(1.1);
+}
+
+.quantity {
+    min-width: 20px;
+    text-align: center;
+    font-weight: 500;
+    color: var(--white-color);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .header {
+        flex-direction: column;
+        gap: 1rem;
+        padding: 1rem;
+    }
+    
+    .userInfo {
+        font-size: 0.8rem;
+        text-align: center;
+    }
+    
+    .main {
+        padding: 1rem;
+    }
+    
+    .title {
+        font-size: 1.5rem;
+    }
+    
+    .nav {
+        flex-wrap: wrap;
+        gap: 0.5rem;
+    }
+    
+    .navButton {
+        font-size: 1rem;
+        padding: 0.4rem 0.8rem;
+    }
+    
+    .combosGrid {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+    
+    .comboCard {
+        padding: 1rem;
+    }
+    
+    .comboName {
+        font-size: 1.2rem;
+    }
+    
+    .comboFooter {
+        flex-direction: column;
+        gap: 1rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .logoText {
+        font-size: 1.4rem;
+    }
+    
+    .title {
+        font-size: 1.2rem;
+    }
+    
+    .comboIcon {
+        font-size: 2rem;
+        width: 60px;
+        height: 60px;
+    }
+}
