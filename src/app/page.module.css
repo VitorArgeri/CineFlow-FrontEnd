@@ -1,0 +1,93 @@
+
+
+.container {
+  position: absolute;
+  top: 0;
+  left: 0;
+  height: 100%;
+  width: 100%;
+  background-color: #000;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: white;
+  text-align: center;
+  overflow: hidden;
+}
+
+
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 50px;
+}
+
+.cine {
+  color: #ff1a1a;
+  font-size: 64px;
+  font-weight: 700;
+}
+
+.flow {
+  color: #2b4eff;
+  font-size: 64px;
+  font-weight: 700;
+}
+
+
+.glasses {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  border-radius: 8px;
+  padding: 8px;
+  margin: 0 10px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.lensLeft {
+  width: 30px;
+  height: 25px;
+  background-color: #2b9fff;
+  margin-right: 6px;
+  border-radius: 2px;
+}
+
+.lensRight {
+  width: 30px;
+  height: 25px;
+  background-color: #ff2b2b;
+  border-radius: 2px;
+}
+
+
+.button {
+  background-color: #ff0000;
+  color: white;
+  font-weight: 700;
+  font-size: 20px;
+  padding: 18px 50px;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+  box-shadow: 0 0 20px rgba(255, 0, 0, 0.6);
+  transition: transform 0.2s ease, box-shadow 0.3s ease;
+  text-decoration: none; 
+  display: inline-block;
+}
+
+.button:hover {
+  transform: scale(1.05);
+  box-shadow: 0 0 30px rgba(255, 0, 0, 0.8);
+}
+
+
+.footerText {
+  margin-top: 60px;
+  font-size: 16px;
+  color: #ccc;
+  letter-spacing: 1px;
+}
