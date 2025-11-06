@@ -18,18 +18,18 @@
     align-items: center;
     justify-content: center;
     margin-bottom: 50px;
-    margin-top: 50px;
+    margin-top: 40px;
 }
 
 .cine {
     color: #ff1a1a;
-    font-size: 64px;
+    font-size: 48px;
     font-weight: 700;
 }
 
 .flow {
     color: #2b4eff;
-    font-size: 64px;
+    font-size: 48px;
     font-weight: 700;
 }
 
@@ -88,4 +88,69 @@
 .activeTab {
     border-bottom: 2px solid blue;
     z-index: 1;
+}
+
+.grid {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5rem;
+    flex-wrap: wrap;
+    width: 90%;
+    padding: 20px;
+    box-sizing: border-box;
+    margin-left: 5%;
+    margin-top: 30px;
+}
+
+.filmesCard {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    text-decoration: none;
+    width: 15rem;
+}
+
+.imageContainer {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 55vh;
+    width: 15rem;
+}
+
+.filmesImage {
+    height: 100%;
+    width: 100%;
+    position: static;
+}
+
+.filmesNome {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
+    font-size: large;
+}
+
+.verSessoes {
+    background: none;
+    border: 1px solid red;
+    color: red;
+    padding: 1rem;
+    border-radius: 12px;
+    font-weight: bold;
+    width: 12.5rem;
+}
+
+.filmesInformacoes {
+    font-size: 18px;
+    font-weight: bold;
+}
+
+.filmesContainer {
+    justify-content: center;
+    align-items: center;
+    display: flex;
+    flex-direction: column;
 }
