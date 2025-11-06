@@ -1,8 +1,10 @@
-/* Bomboniere Styles */
 .container {
     min-height: 100vh;
     background-color: var(--background-color);
     color: var(--white-color);
+    margin: 0;
+    padding: 0;
+    width: 100%;
 }
 
 .header {
@@ -43,7 +45,6 @@
     font-weight: 500;
 }
 
-/* Main Content */
 .main {
     padding: 2rem;
 }
@@ -60,12 +61,10 @@
     margin: 0;
 }
 
-/* Content Spacing */
 .titleSection {
     margin-bottom: 3rem;
 }
 
-/* Alimentos Grid */
 .alimentosGrid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -139,7 +138,6 @@
     color: var(--red-color);
 }
 
-/* Quantity Controls */
 .quantityControls {
     display: flex;
     align-items: center;
@@ -188,7 +186,6 @@
     color: var(--white-color);
 }
 
-/* Carrinho Resumo */
 .carrinhoResumo {
     background: linear-gradient(135deg, #2a2a2a 0%, #1a1a1a 100%);
     border-radius: 12px;
@@ -291,7 +288,51 @@
   border-radius: 2px;
 }
 
-/* Responsive Design */
+.carrinhoFloating {
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(135deg, var(--red-color), #cc0000);
+    color: var(--white-color);
+    border: none;
+    border-radius: 50%;
+    font-size: 1.5rem;
+    cursor: pointer;
+    box-shadow: 0 4px 15px rgba(255, 0, 0, 0.3);
+    transition: all 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.carrinhoFloating:hover {
+    background: linear-gradient(135deg, #cc0000, #aa0000);
+    transform: scale(1.1);
+    box-shadow: 0 6px 20px rgba(255, 0, 0, 0.4);
+}
+
+.carrinhoCount {
+    position: absolute;
+    top: -5px;
+    right: -5px;
+    background-color: var(--white-color);
+    color: var(--red-color);
+    border-radius: 50%;
+    width: 20px;
+    height: 20px;
+    font-size: 0.8rem;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-width: 20px;
+}
+
 @media (max-width: 768px) {
     .header {
         flex-direction: column;
@@ -361,6 +402,22 @@
         font-size: 1.1rem;
         padding: 0.8rem;
     }
+
+    .carrinhoFloating {
+        width: 55px;
+        height: 55px;
+        font-size: 1.3rem;
+        bottom: 15px;
+        right: 15px;
+    }
+
+    .carrinhoCount {
+        width: 18px;
+        height: 18px;
+        font-size: 0.7rem;
+        top: -3px;
+        right: -3px;
+    }
 }
 
 @media (max-width: 480px) {
@@ -382,5 +439,19 @@
     
     .alimentoPrice {
         font-size: 1.2rem;
+    }
+
+    .carrinhoFloating {
+        width: 50px;
+        height: 50px;
+        font-size: 1.2rem;
+        bottom: 10px;
+        right: 10px;
+    }
+
+    .carrinhoCount {
+        width: 16px;
+        height: 16px;
+        font-size: 0.6rem;
     }
 }

@@ -7,3 +7,15 @@
     --dark-blue: #3A2C95;
     --light-blue: #8F87FC;
 }
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    background-color: var(--background-color);
+}
