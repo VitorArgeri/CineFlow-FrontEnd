@@ -36,7 +36,6 @@ export default function App() {
     buscarAlimentos()
   }, [])
 
-  // Detectar quando o usuário está na seção do carrinho
   useEffect(() => {
     const handleScroll = () => {
       const carrinhoElement = document.querySelector(`.${styles.carrinhoResumo}`)
@@ -48,7 +47,7 @@ export default function App() {
     }
 
     window.addEventListener('scroll', handleScroll)
-    handleScroll() // Verificar inicialmente
+    handleScroll()
 
     return () => window.removeEventListener('scroll', handleScroll)
   }, [carrinho])
@@ -111,7 +110,7 @@ export default function App() {
                     </span>
                 </div>
                 <div className={styles.userInfo}>
-                    <span>FILME: EU AINDA ESTOU AQUI | SESSÃO: 21:00H | INGRESSOS: R$ 6</span>
+                    <span>FILME: .... | SESSÃO: 00:00H | INGRESSOS: R$ 00</span>
                 </div>
             </header>
 
