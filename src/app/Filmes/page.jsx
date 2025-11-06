@@ -63,7 +63,6 @@ export default function Filmes() {
             <div className={styles.contentContainer}>
                 {activeTab === 'Em Cartaz' && (
                     <div className={styles.filmesSection}>
-                        <h2 className={styles.sectionTitle}>Em Cartaz</h2>
                         <div className={styles.grid}>
                             {filmes.length > 0 ? (
                                 filmes.map((filmes) => (
@@ -71,9 +70,11 @@ export default function Filmes() {
                                         <div className={styles.imageContainer}>
                                             <img src={filmes.imgUrl} alt={filmes.nome} className={styles.filmesImage} />
                                         </div>
-                                        <p className={styles.filmesNome}>{filmes.nome}</p>
-                                        <p>{filmes.duracaoMinutos} - {filmes.classificacaoIndicativa}</p>
-                                        <button className={styles.verSessoes}>VER SESSÕES</button>
+                                        <div className={styles.filmesContainer}>
+                                            <p className={styles.filmesNome}>{filmes.nome}</p>
+                                            <p className={styles.filmesInformacoes}>{filmes.duracaoMinutos} min - {filmes.classificacaoIndicativa} anos</p>
+                                            <button className={styles.verSessoes}>VER SESSÕES</button>
+                                        </div>
                                     </Link>
                                 ))
                             ) : (
@@ -86,7 +87,6 @@ export default function Filmes() {
                 )}
                 {activeTab === 'Em Breve' && (
                     <div className={styles.filmesSection}>
-                        <h2 className={styles.sectionTitle}>Em Breve</h2>
                         <div className={styles.grid}>
                             {filmes.length > 0 ? (
                                 filmes.map((filmes) => (
@@ -94,9 +94,11 @@ export default function Filmes() {
                                         <div className={styles.imageContainer}>
                                             <img src={filmes.imgUrl} alt={filmes.nome} className={styles.filmesImage} />
                                         </div>
-                                        <p className={styles.filmesNome}>{filmes.nome}</p>
-                                        <p>{filmes.duracaoMinutos} - {filmes.classificacaoIndicativa}</p>
-                                        <button className={styles.verSessoes}>VER SESSÕES</button>
+                                        <div className={styles.filmesContainer}>
+                                            <p className={styles.filmesNome}>{filmes.nome}</p>
+                                            <p className={styles.filmesInformacoes}>{filmes.duracaoMinutos} min - {filmes.classificacaoIndicativa} anos</p>
+                                            <button className={styles.verSessoes}>VER SESSÕES</button>
+                                        </div>
                                     </Link>
                                 ))
                             ) : (
