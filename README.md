@@ -1,5 +1,5 @@
-# SilksongProject
-O Cineflow tem como objetivo oferecer uma solução para os clientes, que muitas vezes se veem em situações de demoras em filas intermináveis. O sistema será posto em um Totem, facilitando a compra de ingressos e alimentos dentro do cinema.
+# CineFlow
+O Cineflow tem como objetivo oferecer uma solução prática para os clientes que enfrentam longas filas em cinemas. Através de um Totem interativo, o sistema facilitará a compra de ingressos e alimentos, tornando a experiência mais rápida e eficiente.
 
 ## Instalação
 ```bash
