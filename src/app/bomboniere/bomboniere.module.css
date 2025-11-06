@@ -206,6 +206,32 @@
     color: var(--white-color);
 }
 
+.glasses {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #333;
+  border-radius: 6px;
+  padding: 6px;
+  margin: 0 8px;
+  box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.lensLeft {
+  width: 24px;
+  height: 20px;
+  background-color: #2b9fff;
+  margin-right: 4px;
+  border-radius: 2px;
+}
+
+.lensRight {
+  width: 24px;
+  height: 20px;
+  background-color: #ff2b2b;
+  border-radius: 2px;
+}
+
 /* Responsive Design */
 @media (max-width: 768px) {
     .header {
