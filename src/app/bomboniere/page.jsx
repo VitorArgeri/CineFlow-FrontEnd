@@ -7,6 +7,7 @@ export default function App() {
   const [alimentos, setAlimentos] = useState([])
   const [carrinho, setCarrinho] = useState({}) // Estado para gerenciar quantidades
   const [mostrarBotaoCarrinho, setMostrarBotaoCarrinho] = useState(true)
+  const [categoriaAtiva, setCategoriaAtiva] = useState('todos') // Estado para categoria ativa
 
   useEffect(() => {
     async function buscarAlimentos() {
@@ -96,6 +97,35 @@ export default function App() {
     }
   }
 
+  // Função para filtrar alimentos por categoria
+  const filtrarAlimentosPorCategoria = () => {
+    if (categoriaAtiva === 'todos') {
+      return alimentos
+    }
+    
+    return alimentos.filter(alimento => {
+      if (!alimento || !alimento.nome) return false
+      
+      const nome = alimento.nome.toLowerCase()
+      
+      switch (categoriaAtiva) {
+        case 'combos':
+          return nome.includes('combo') || nome.includes('kit')
+        case 'pipocas':
+          return nome.includes('pipoca')
+        case 'bebidas':
+          return nome.includes('refri') || nome.includes('suco') || nome.includes('água') || 
+                 nome.includes('coca') || nome.includes('pepsi') || nome.includes('guaraná') ||
+                 nome.includes('bebida') || nome.includes('refrigerante')
+        case 'doces':
+          return nome.includes('chocolate') || nome.includes('doce') || nome.includes('bala') ||
+                 nome.includes('chiclete') || nome.includes('açúcar') || nome.includes('candy')
+        default:
+          return true
+      }
+    })
+  }
+
     return (
         <div className={styles.container}>
             <header className={styles.header}>
@@ -117,10 +147,52 @@ export default function App() {
             <main className={styles.main}>
                 <div className={styles.titleSection}>
                     <h1 className={styles.title}>ADICIONE LANCHES AO SEU PEDIDO</h1>
+                    <button className={styles.voltarBtn} type="button">
+                        Voltar
+                    </button>
+                </div>
+
+                {/* Navegação de categorias */}
+                <div className={styles.categoriasNav}>
+                    <button 
+                        className={`${styles.categoriaBtn} ${categoriaAtiva === 'todos' ? styles.categoriaAtiva : ''}`}
+                        onClick={() => setCategoriaAtiva('todos')}
+                        type="button"
+                    >
+                        Todos
+                    </button>
+                    <button 
+                        className={`${styles.categoriaBtn} ${categoriaAtiva === 'combos' ? styles.categoriaAtiva : ''}`}
+                        onClick={() => setCategoriaAtiva('combos')}
+                        type="button"
+                    >
+                        Combos
+                    </button>
+                    <button 
+                        className={`${styles.categoriaBtn} ${categoriaAtiva === 'pipocas' ? styles.categoriaAtiva : ''}`}
+                        onClick={() => setCategoriaAtiva('pipocas')}
+                        type="button"
+                    >
+                        Pipocas
+                    </button>
+                    <button 
+                        className={`${styles.categoriaBtn} ${categoriaAtiva === 'bebidas' ? styles.categoriaAtiva : ''}`}
+                        onClick={() => setCategoriaAtiva('bebidas')}
+                        type="button"
+                    >
+                        Bebidas
+                    </button>
+                    <button 
+                        className={`${styles.categoriaBtn} ${categoriaAtiva === 'doces' ? styles.categoriaAtiva : ''}`}
+                        onClick={() => setCategoriaAtiva('doces')}
+                        type="button"
+                    >
+                        Doces
+                    </button>
                 </div>
 
                 <div className={styles.alimentosGrid}>
-                    {alimentos && alimentos.length > 0 ? alimentos.map((alimento) => {
+                    {alimentos && alimentos.length > 0 ? filtrarAlimentosPorCategoria().map((alimento) => {
                         if (!alimento || !alimento.id) return null
                         
                         const quantidade = carrinho[alimento.id] || 0
