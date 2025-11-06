@@ -16,8 +16,8 @@ export default function Page() {
       </div>
 
       
-      <Link href="/ingressos" className={styles.button}>
-        COMPRAR INGRESSO
+      <Link href="/Filmes" className={styles.button}>
+        ESCOLHER FILMES
       </Link>
 
       
