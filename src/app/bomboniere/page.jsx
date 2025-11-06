@@ -5,6 +5,7 @@ import axios from 'axios'
 
 export default function App() {
   const [alimentos, setAlimentos] = useState([])
+  const [carrinho, setCarrinho] = useState({}) // Estado para gerenciar quantidades
 
   useEffect(() => {
     async function buscarAlimentos() {
@@ -12,6 +13,12 @@ export default function App() {
         const resposta = await axios.get('http://localhost:5000/alimentos')
         console.log(resposta.data)
         setAlimentos(resposta.data)
+        
+        const carrinhoInicial = {}
+        resposta.data.forEach(alimento => {
+          carrinhoInicial[alimento.id] = 0
+        })
+        setCarrinho(carrinhoInicial)
       } catch (erro) {
         console.error('Erro ao buscar alimentos:', erro)
       }
@@ -19,6 +26,20 @@ export default function App() {
 
     buscarAlimentos()
   }, [])
+
+  const adicionarItem = (id) => {
+    setCarrinho(prev => ({
+      ...prev,
+      [id]: (prev[id] || 0) + 1
+    }))
+  }
+
+  const removerItem = (id) => {
+    setCarrinho(prev => ({
+      ...prev,
+      [id]: Math.max((prev[id] || 0) - 1, 0)
+    }))
+  }
 
     return (
         <div className={styles.container}>
@@ -44,25 +65,70 @@ export default function App() {
                 </div>
 
                 <div className={styles.alimentosGrid}>
-                    {alimentos.map((alimento) => (  
-                        <div key={alimento.id} className={styles.alimentoCard}>
-                            <div className={styles.alimentoImage}>
-                                <img src={alimento.imgUrl} alt={alimento.nome} />
-                            </div>
-                            <div className={styles.alimentoContent}>
-                                <h3 className={styles.alimentoName}>{alimento.nome}</h3>
-                                <div className={styles.alimentoFooter}>
-                                    <span className={styles.alimentoPrice}>R$ {alimento.preco}</span>
-                                    <div className={styles.quantityControls}>
-                                        <button className={styles.quantityBtn}>-</button>
-                                        <span className={styles.quantity}>1</span>
-                                        <button className={styles.quantityBtn}>+</button>
+                    {alimentos.map((alimento) => {
+                        const quantidade = carrinho[alimento.id] || 0
+                        
+                        return (
+                            <div key={alimento.id} className={styles.alimentoCard}>
+                                <div className={styles.alimentoImage}>
+                                    <img src={alimento.imgUrl} alt={alimento.nome} />
+                                </div>
+                                <div className={styles.alimentoContent}>
+                                    <h3 className={styles.alimentoName}>{alimento.nome}</h3>
+                                    <div className={styles.alimentoFooter}>
+                                        <span className={styles.alimentoPrice}>R$ {alimento.preco}</span>
+                                        <div className={styles.quantityControls}>
+                                            <button 
+                                                className={styles.quantityBtn}
+                                                onClick={() => removerItem(alimento.id)}
+                                                disabled={quantidade === 0}
+                                            >
+                                                -
+                                            </button>
+                                            <span className={styles.quantity}>{quantidade}</span>
+                                            <button 
+                                                className={styles.quantityBtn}
+                                                onClick={() => adicionarItem(alimento.id)}
+                                            >
+                                                +
+                                            </button>
+                                        </div>
                                     </div>
                                 </div>
                             </div>
-                        </div>
-                    ))}
+                        )
+                    })}
                 </div>
+
+                {Object.values(carrinho).some(quantidade => quantidade > 0) && (
+                    <div className={styles.carrinhoResumo}>
+                        <h2 className={styles.carrinhoTitulo}>Resumo do Pedido</h2>
+                        <div className={styles.carrinhoItens}>
+                            {alimentos.filter(alimento => carrinho[alimento.id] > 0).map(alimento => (
+                                <div key={alimento.id} className={styles.carrinhoItem}>
+                                    <span className={styles.carrinhoItemNome}>
+                                        {alimento.nome} x{carrinho[alimento.id]}
+                                    </span>
+                                    <span className={styles.carrinhoItemPreco}>
+                                        R$ {(alimento.preco * carrinho[alimento.id]).toFixed(2)}
+                                    </span>
+                                </div>
+                            ))}
+                        </div>
+                        <div className={styles.carrinhoTotal}>
+                            <strong>
+                                Total: R$ {
+                                    alimentos.reduce((total, alimento) => {
+                                        return total + (alimento.preco * (carrinho[alimento.id] || 0))
+                                    }, 0).toFixed(2)
+                                }
+                            </strong>
+                        </div>
+                        <button className={styles.finalizarBtn}>
+                            Finalizar Pedido
+                        </button>
+                    </div>
+                )}
             </main>
         </div>
     );
