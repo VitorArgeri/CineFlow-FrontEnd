@@ -5,6 +5,13 @@
     color: var(--white-color);
 }
 
+.backButtonWrapper {
+    position: absolute;
+    top: 1rem;
+    left: 2rem;
+    z-index: 10;
+}
+
 .header {
     display: flex;
     justify-content: space-between;
@@ -12,6 +19,7 @@
     padding: 1rem 2rem;
     background-color: #000;
     border-bottom: 1px solid #333;
+    position: relative;
 }
 
 .logo {

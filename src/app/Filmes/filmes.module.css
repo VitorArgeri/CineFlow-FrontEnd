@@ -13,12 +13,31 @@
     width: 100%;
 }
 
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2rem;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+.backButtonContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 2rem;
+}
+
+.spacer {
+    flex: 1;
+}
+
 .logo {
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-bottom: 50px;
-    margin-top: 40px;
 }
 
 .cine {
@@ -91,66 +110,98 @@
 }
 
 .grid {
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 5rem;
-    flex-wrap: wrap;
+    max-width: 1500px;
     width: 90%;
     padding: 20px;
     box-sizing: border-box;
-    margin-left: 5%;
+    margin-left: auto;
+    margin-right: auto;
     margin-top: 30px;
 }
 
 .filmesCard {
     display: flex;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     flex-direction: column;
     text-decoration: none;
-    width: 15rem;
+    height: 100%;
 }
 
 .imageContainer {
     display: flex;
     align-items: center;
     justify-content: center;
-    height: 55vh;
-    width: 15rem;
+    height: 450px;
+    width: 100%;
 }
 
 .filmesImage {
     height: 100%;
     width: 100%;
-    position: static;
+    object-fit: cover;
+    border-radius: 12px;
 }
 
 .filmesNome {
     color: white;
     text-decoration: none;
     font-weight: bold;
-    font-size: large;
+    font-size: 22px;
+    text-transform: uppercase;
+    text-align: center;
+    line-height: 1.3;
 }
 
 .verSessoes {
     background: none;
     border: 1px solid red;
     color: red;
-    padding: 1rem;
+    padding: 0.65rem 1.2rem;
     border-radius: 12px;
     font-weight: bold;
-    width: 12.5rem;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+.verSessoes:hover {
+    background-color: red;
+    color: white;
 }
 
 .filmesInformacoes {
-    font-size: 18px;
+    font-size: 22px;
     font-weight: bold;
+    color: var(--blue-color);
+    margin-top: auto;
+    margin-bottom: 0.5rem;
 }
 
 .filmesContainer {
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     display: flex;
     flex-direction: column;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    flex: 1;
+    width: 100%;
+}
+
+@media (max-width: 1100px) {
+    .grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+}
+
+@media (max-width: 700px) {
+    .grid {
+        grid-template-columns: 1fr;
+    }
 }

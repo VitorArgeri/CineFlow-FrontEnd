@@ -1,7 +1,7 @@
-'use client'
-import { useState } from 'react';
-import Link from 'next/link';
-import styles from './page.module.css';
+"use client";
+import Link from "next/link";
+import styles from "./page.module.css";
+import Button from "@/components/Button";
 
 export default function Sessoes() {
     // Dados mockados dos filmes em cartaz
@@ -58,15 +58,16 @@ export default function Sessoes() {
 
     return (
         <div className={styles.container}>
+            <div className={styles.backButtonWrapper}>
+                <Button href="/Filmes">
+                    VOLTAR
+                </Button>
+            </div>
             <h1 className={styles.title}>FILMES EM CARTAZ</h1>
-            
+
             <div className={styles.grid}>
                 {filmes.map((filme) => (
-                    <Link 
-                        href={`/sessoes/${filme.id}`} 
-                        key={filme.id}
-                        className={styles.movieCard}
-                    >
+                    <div className={styles.movieCard} key={filme.id}>
                         <img
                             src={filme.image}
                             alt={filme.title}
@@ -77,10 +78,18 @@ export default function Sessoes() {
                             <div className={styles.movieMeta}>
                                 <span className={styles.rating}>{filme.rating}</span>
                                 <span>{filme.duration}</span>
-                                <span>{filme.genres.join(' • ')}</span>
+                                <span>{filme.genres.join(" • ")}</span>
                             </div>
                         </div>
-                    </Link>
+                        <div className={styles.movieActions}>
+                            <Link
+                                href={`/sessoes/${filme.id}`}
+                                className={styles.viewButton}
+                            >
+                                Ver Sessões
+                            </Link>
+                        </div>
+                    </div>
                 ))}
             </div>
         </div>
