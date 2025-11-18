@@ -281,6 +281,11 @@
     margin-bottom: 0.5rem;
 }
 
+.anos {
+    color: #2b4eff;
+    font-weight: bold;
+}
+
 .filmesContainer {
     justify-content: flex-start;
     align-items: center;

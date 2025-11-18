@@ -169,10 +169,10 @@
     display: flex;
     gap: 2rem;
     background-color: rgba(85, 85, 85, 0.5);
-    padding: 2rem;
+    padding: 2.25rem;
     border-radius: 12px;
-    max-width: 900px;
-    width: 90%;
+    max-width: 1040px;
+    width: 92%;
     margin-bottom: 3rem;
     box-sizing: border-box;
 }
@@ -182,8 +182,8 @@
 }
 
 .filmeImage {
-    width: 200px;
-    height: 300px;
+    width: 240px;
+    height: 360px;
     object-fit: cover;
     border-radius: 8px;
 }
@@ -270,7 +270,7 @@
     flex-wrap: wrap;
     gap: 1.5rem;
     justify-content: center;
-    max-width: 900px;
+    max-width: 1040px;
     width: 100%;
     padding-bottom: 3rem;
     margin-bottom: 2rem;
@@ -348,7 +348,7 @@
 
     .filmeImage {
         width: 100%;
-        max-width: 300px;
+        max-width: 320px;
         height: auto;
     }
 

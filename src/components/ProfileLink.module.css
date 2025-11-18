@@ -12,3 +12,16 @@
 .profileImage:hover {
     transform: scale(1.05);
 }
+
+.greetingWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 75px;
+}
+
+.greeting {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #fff;
+}

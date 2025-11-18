@@ -101,7 +101,7 @@ export default function Filmes() {
                                         <div className={styles.filmesContainer}>
                                             <p className={styles.filmesNome}>{filme.nome}</p>
                                             <p className={styles.filmesInformacoes}>
-                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : filme.classificacaoIndicativa}
+                                                {filme.duracaoMinutos} min - <span className={styles.anos}>{filme.classificacaoIndicativa === '1' ? 'Livre' : `${filme.classificacaoIndicativa} anos`}</span>
                                             </p>
                                             <Button href={`/${filme.id}`}>
                                                 VER SESSÕES
@@ -131,7 +131,7 @@ export default function Filmes() {
                                         <div className={styles.filmesContainer}>
                                             <p className={styles.filmesNome}>{filme.nome}</p>
                                             <p className={styles.filmesInformacoes}>
-                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : filme.classificacaoIndicativa}
+                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : <>{filme.classificacaoIndicativa} <span className={styles.anos}>anos</span></>}
                                             </p>
                                             <Button href={`/${filme.id}`}>
                                                 VER SESSÕES

@@ -54,6 +54,8 @@ export default function LoginPage() {
         try {
           localStorage.setItem("userToken", data.token);
           localStorage.setItem("userId", data.userId);
+          if (data.name) localStorage.setItem("userName", data.name);
+          else if (data.user?.name) localStorage.setItem("userName", data.user.name);
         } catch (_) {}
         router.push("/Filmes");
       } else {

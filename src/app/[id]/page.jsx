@@ -1,11 +1,12 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
 import Button from "@/components/Button";
 import ProfileLink from "@/components/ProfileLink";
 
 export default function DetalhesFilme({ params }) {
+    const unwrappedParams = use(params);
     const [filme, setFilme] = useState(null);
     const [sessoes, setSessoes] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -17,11 +18,11 @@ export default function DetalhesFilme({ params }) {
             setLoading(true);
             try {
                 // Buscar dados do filme
-                const filmeResponse = await axios.get(`http://localhost:5000/filmes/${params.id}`);
+                const filmeResponse = await axios.get(`http://localhost:5000/filmes/${unwrappedParams.id}`);
                 setFilme(filmeResponse.data);
 
                 // Buscar sessões do filme
-                const sessoesResponse = await axios.get(`http://localhost:5000/sessoes?filmeId=${params.id}`);
+                const sessoesResponse = await axios.get(`http://localhost:5000/sessoes?filmeId=${unwrappedParams.id}`);
                 const sessoesData = sessoesResponse.data;
                 setSessoes(sessoesData);
 
@@ -39,7 +40,7 @@ export default function DetalhesFilme({ params }) {
         };
 
         fetchFilmeData();
-    }, [params.id]);
+    }, [unwrappedParams.id]);
 
     // Extrair datas únicas das sessões disponíveis
     const extrairDatasUnicas = (sessoes) => {
