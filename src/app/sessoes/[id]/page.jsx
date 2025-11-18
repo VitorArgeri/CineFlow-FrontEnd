@@ -2,6 +2,7 @@
 import { useState } from 'react';
 import styles from './page.module.css';
 import Button from '@/components/Button';
+import ProfileLink from '@/components/ProfileLink';
 
 export default function DetalhesSessao({ params }) {
     const [dataSelecionada, setDataSelecionada] = useState('30/10');
@@ -48,6 +49,9 @@ export default function DetalhesSessao({ params }) {
                 <Button href="/sessoes">
                     VOLTAR
                 </Button>
+            </div>
+            <div className={styles.profileWrapper}>
+                <ProfileLink />
             </div>
             <section className={styles.selecaoSessao}>
                 <h1 className={styles.titulo}>SELECIONE A SESSÃO</h1>

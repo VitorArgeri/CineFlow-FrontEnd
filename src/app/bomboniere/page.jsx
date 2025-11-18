@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import styles from './bomboniere.module.css'
 import axios from 'axios'
 import Button from '@/components/Button'
+import ProfileLink from '@/components/ProfileLink'
 
 export default function App() {
   const [alimentos, setAlimentos] = useState([])
@@ -44,12 +45,12 @@ export default function App() {
 
     return (
         <div className={styles.container}>
+            <div className={styles.backButtonWrapper}>
+                <Button href="/Filmes">
+                    VOLTAR
+                </Button>
+            </div>
             <header className={styles.header}>
-                <div className={styles.backButtonWrapper}>
-                    <Button href="/Filmes">
-                        VOLTAR
-                    </Button>
-                </div>
                 <div className={styles.logo}>
                     <span className={styles.logoText}>
                         <span className={styles.cine}>Cine</span>
@@ -62,6 +63,9 @@ export default function App() {
                 </div>
                 <div className={styles.userInfo}>
                     <span>FILME: EU AINDA ESTOU AQUI | SESSÃO: 21:00H | INGRESSOS: R$ 6</span>
+                </div>
+                <div className={styles.profileWrapper}>
+                    <ProfileLink />
                 </div>
             </header>
 

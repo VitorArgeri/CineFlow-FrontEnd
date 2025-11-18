@@ -3,8 +3,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./filmes.module.css";
-import Link from "next/link"
 import Button from "@/components/Button";
+import ProfileLink from "@/components/ProfileLink";
 
 export default function Filmes() {
     const [filmes, setFilmes] = useState([]);
@@ -44,7 +44,11 @@ export default function Filmes() {
     });
 
     if (loading) {
-        return <p className={styles.loadingText}>Carregando filmes...</p>
+        return (
+            <div className={styles.loadingContainer}>
+                <p className={styles.loadingText}>CARREGANDO FILMES...</p>
+            </div>
+        )
     }
 
     return (
@@ -63,7 +67,9 @@ export default function Filmes() {
                     </div>
                     <span className={styles.flow}>Flow</span>
                 </div>
-                <div className={styles.spacer}></div>
+                <div className={styles.profileContainer}>
+                    <ProfileLink />
+                </div>
             </div>
             <div className={styles.tabContainer}>
                 <button
@@ -94,7 +100,9 @@ export default function Filmes() {
                                         </div>
                                         <div className={styles.filmesContainer}>
                                             <p className={styles.filmesNome}>{filme.nome}</p>
-                                            <p className={styles.filmesInformacoes}>{filme.duracaoMinutos} min - {filme.classificacaoIndicativa} anos</p>
+                                            <p className={styles.filmesInformacoes}>
+                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : `${filme.classificacaoIndicativa} anos`}
+                                            </p>
                                             <Button href={`/${filme.id}`}>
                                                 VER SESSÕES
                                             </Button>
@@ -120,7 +128,9 @@ export default function Filmes() {
                                         </div>
                                         <div className={styles.filmesContainer}>
                                             <p className={styles.filmesNome}>{filme.nome}</p>
-                                            <p className={styles.filmesInformacoes}>{filme.duracaoMinutos} min - {filme.classificacaoIndicativa} anos</p>
+                                            <p className={styles.filmesInformacoes}>
+                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : `${filme.classificacaoIndicativa} anos`}
+                                            </p>
                                             <Button href={`/${filme.id}`}>
                                                 VER SESSÕES
                                             </Button>

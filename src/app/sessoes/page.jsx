@@ -2,6 +2,7 @@
 import Link from "next/link";
 import styles from "./page.module.css";
 import Button from "@/components/Button";
+import ProfileLink from "@/components/ProfileLink";
 
 export default function Sessoes() {
     // Dados mockados dos filmes em cartaz
@@ -62,6 +63,9 @@ export default function Sessoes() {
                 <Button href="/Filmes">
                     VOLTAR
                 </Button>
+            </div>
+            <div className={styles.profileWrapper}>
+                <ProfileLink />
             </div>
             <h1 className={styles.title}>FILMES EM CARTAZ</h1>
 

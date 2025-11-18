@@ -68,6 +68,11 @@ export default function AdminLoginPage() {
 
   return (
     <main className={styles.container}>
+      <div className={styles.backButtonWrapper}>
+        <Button href="/Filmes">
+          VOLTAR
+        </Button>
+      </div>
 
       <form className={styles.card} onSubmit={handleSubmit} noValidate>
               <div className={styles.logo}>

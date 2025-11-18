@@ -19,9 +19,16 @@
 
 .backButtonWrapper {
   position: absolute;
-  top: 2vh;
-  left: 2vw;
-  z-index: 10;
+  top: 2rem;
+  left: 2rem;
+  z-index: 100;
+}
+
+.profileWrapper {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
 }
 
 
