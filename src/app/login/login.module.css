@@ -137,7 +137,7 @@
 }
 
 .input::placeholder {
-  color: #ffffff;
+  color: #d8d8d8;
 }
 
 .passwordRow {
@@ -148,6 +148,26 @@
 
 .passwordRow .input {
   flex: 1;
+}
+
+.forgotPassword {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #2b4eff;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  display: inline-block;
+  margin-top: -1.2rem;
+  margin-bottom: 0.5rem;
+}
+
+.forgotPassword:hover {
+  text-decoration: underline;
+  color: #1e39cc;
+}
+
+.forgotPassword:focus {
+  outline: 2px solid #2b4eff;
 }
 
 .toggle {
