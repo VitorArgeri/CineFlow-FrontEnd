@@ -3,6 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
+import Button from "@/components/Button";
 
 export default function AdminLoginPage() {
   const router = useRouter();
@@ -117,9 +118,11 @@ export default function AdminLoginPage() {
           </button>
         </div>
 
-        <button className={styles.submit} type="submit" disabled={loading}>
-          {loading ? "Entrando..." : "Entrar"}
-        </button>
+        
+        
+        <Button className={styles.submit} type="submit" disabled={loading}>
+          {loading ? "ENTRANDO..." : "ENTRAR"}
+        </Button>
       </form>
     </main>
   );
