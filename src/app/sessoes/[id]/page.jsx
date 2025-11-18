@@ -1,6 +1,7 @@
 'use client'
 import { useState } from 'react';
 import styles from './page.module.css';
+import Button from '@/components/Button';
 
 export default function DetalhesSessao({ params }) {
     const [dataSelecionada, setDataSelecionada] = useState('30/10');
@@ -43,6 +44,11 @@ export default function DetalhesSessao({ params }) {
 
     return (
         <main className={styles.main}>
+            <div className={styles.backButtonWrapper}>
+                <Button href="/sessoes">
+                    VOLTAR
+                </Button>
+            </div>
             <section className={styles.selecaoSessao}>
                 <h1 className={styles.titulo}>SELECIONE A SESSÃO</h1>
                 

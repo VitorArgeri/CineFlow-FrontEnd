@@ -3,6 +3,14 @@
     background-color: var(--background-color);
     color: var(--white-color);
     padding: 2rem;
+    position: relative;
+}
+
+.backButtonWrapper {
+    position: absolute;
+    top: 2rem;
+    left: 2rem;
+    z-index: 10;
 }
 
 .titulo {

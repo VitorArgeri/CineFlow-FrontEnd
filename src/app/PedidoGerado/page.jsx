@@ -1,10 +1,16 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./pedidogerado.module.css";
+import Button from "@/components/Button";
 
 export default function Page() {
   return (
     <div className={styles.container}>
+      <div className={styles.backButtonWrapper}>
+        <Button href="/bomboniere">
+          VOLTAR
+        </Button>
+      </div>
       
       <div className={styles.logo}>
         <span className={styles.cine}>Cine</span>

@@ -3,14 +3,6 @@
     min-height: 100vh;
     background-color: #000;
     color: white;
-    position: relative;
-}
-
-.backButtonWrapper {
-    position: absolute;
-    top: 2rem;
-    left: 2rem;
-    z-index: 10;
 }
 
 .title {
