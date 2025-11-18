@@ -5,7 +5,7 @@ import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
 import Button from "@/components/Button";
 
-export default function AdminLoginPage() {
+export default function LoginPage() {
   const router = useRouter();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
