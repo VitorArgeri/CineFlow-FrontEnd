@@ -101,7 +101,7 @@ export default function Filmes() {
                                         <div className={styles.filmesContainer}>
                                             <p className={styles.filmesNome}>{filme.nome}</p>
                                             <p className={styles.filmesInformacoes}>
-                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : `${filme.classificacaoIndicativa} anos`}
+                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : filme.classificacaoIndicativa}
                                             </p>
                                             <Button href={`/${filme.id}`}>
                                                 VER SESSÕES
@@ -110,9 +110,11 @@ export default function Filmes() {
                                     </div>
                                 ))
                             ) : (
-                                <p className={styles.noResults}>
-                                    Nenhum filme em cartaz no momento.
-                                </p>
+                                <div className={styles.noResultsContainer}>
+                                    <p className={styles.noResults}>
+                                        Nenhum filme em cartaz no momento.
+                                    </p>
+                                </div>
                             )}
                         </div>
                     </div>
@@ -129,7 +131,7 @@ export default function Filmes() {
                                         <div className={styles.filmesContainer}>
                                             <p className={styles.filmesNome}>{filme.nome}</p>
                                             <p className={styles.filmesInformacoes}>
-                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : `${filme.classificacaoIndicativa} anos`}
+                                                {filme.duracaoMinutos} min - {filme.classificacaoIndicativa === '1' ? 'Livre' : filme.classificacaoIndicativa}
                                             </p>
                                             <Button href={`/${filme.id}`}>
                                                 VER SESSÕES
@@ -138,9 +140,11 @@ export default function Filmes() {
                                     </div>
                                 ))
                             ) : (
-                                <p className={styles.noResults}>
-                                    Nenhum filme em breve no momento.
-                                </p>
+                                <div className={styles.noResultsContainer}>
+                                    <p className={styles.noResults}>
+                                        Nenhum filme em breve no momento.
+                                    </p>
+                                </div>
                             )}
                         </div>
                     </div>

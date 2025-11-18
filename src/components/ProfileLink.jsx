@@ -8,8 +8,8 @@ export default function ProfileLink() {
             <Image 
                 src="/Img/profile.png" 
                 alt="Perfil" 
-                width={125} 
-                height={125} 
+                width={75} 
+                height={75} 
                 className={styles.profileImage}
             />
         </Link>

@@ -14,6 +14,13 @@
   overflow: hidden;
 }
 
+.profileWrapper {
+  position: absolute;
+  top: 2rem;
+  right: 2rem;
+  z-index: 100;
+}
+
 
 .logo {
   display: flex;

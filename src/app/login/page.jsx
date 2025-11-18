@@ -35,16 +35,15 @@ export default function LoginPage() {
     setLoading(true);
     setError("");
     try {
-      // ajustável: espera um endpoint POST /api/admin/login que retorne { token }
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("http://localhost:5000/auth/login", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ email, password }),
       });
 
       if (!res.ok) {
-        const text = await res.text();
-        setError(text || "Credenciais inválidas.");
+        const errorData = await res.json();
+        setError(errorData.message || "Credenciais inválidas.");
         setLoading(false);
         return;
       }
@@ -53,9 +52,10 @@ export default function LoginPage() {
 
       if (data?.token) {
         try {
-          localStorage.setItem("adminToken", data.token);
+          localStorage.setItem("userToken", data.token);
+          localStorage.setItem("userId", data.userId);
         } catch (_) {}
-        router.push("/admin/dashboard");
+        router.push("/Filmes");
       } else {
         setError("Resposta inesperada do servidor.");
       }

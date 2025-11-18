@@ -70,6 +70,11 @@ export default function RegisterPage() {
 
   return (
     <main className={styles.container}>
+      <div className={styles.backButtonWrapper}>
+        <Button href="/login">
+          VOLTAR
+        </Button>
+      </div>
 
       <form className={styles.card} onSubmit={handleSubmit} noValidate>
               <div className={styles.logo}>
@@ -90,8 +95,8 @@ export default function RegisterPage() {
         <input
           id="name"
           className={styles.input}
-          type="name"
-          value={email}
+          type="text"
+          value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Digite seu nome..."
           required
@@ -131,20 +136,18 @@ export default function RegisterPage() {
           >
             {showPassword ? "Ocultar" : "Mostrar"}
           </button>
-
-          
         </div>
         
-        <label className={styles.label} htmlFor="name">
-          Código:    
+        <label className={styles.label} htmlFor="code">
+          Código de Cadastro:    
         </label>
         <input
           id="code"
           className={styles.input}
-          type="code"
-          value={email}
-          onChange={(e) => setName(e.target.value)}
-          placeholder="Ex: 123456"
+          type="text"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
+          placeholder="Digite o código..."
           required
         />
         <a href="/login" className={styles.forgotPassword}>
@@ -152,7 +155,7 @@ export default function RegisterPage() {
         </a>
         
         <Button className={styles.submit} type="submit" disabled={loading}>
-          {loading ? "ENTRANDO..." : "ENTRAR"}
+          {loading ? "CADASTRANDO..." : "CADASTRAR"}
         </Button>
       </form>
     </main>
