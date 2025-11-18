@@ -91,7 +91,7 @@ export default function RegisterPage() {
           id="name"
           className={styles.input}
           type="name"
-          value={email}
+          value={name}
           onChange={(e) => setName(e.target.value)}
           placeholder="Digite seu nome..."
           required
@@ -135,15 +135,15 @@ export default function RegisterPage() {
           
         </div>
         
-        <label className={styles.label} htmlFor="name">
+        <label className={styles.label} htmlFor="code">
           Código:    
         </label>
         <input
           id="code"
           className={styles.input}
-          type="code"
-          value={email}
-          onChange={(e) => setName(e.target.value)}
+          type="number"
+          value={code}
+          onChange={(e) => setCode(e.target.value)}
           placeholder="Ex: 123456"
           required
         />
