@@ -1,0 +1,14 @@
+.profileLink {
+    display: inline-block;
+}
+
+.profileImage {
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    object-fit: cover;
+}
+
+.profileImage:hover {
+    transform: scale(1.05);
+}

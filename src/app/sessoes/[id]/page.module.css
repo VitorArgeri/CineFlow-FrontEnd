@@ -1,16 +1,26 @@
 .main {
     min-height: 100vh;
-    background-color: var(--background-color);
-    color: var(--white-color);
-    padding: 2rem;
-    position: relative;
+    background-color: #000;
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 6rem;
 }
 
 .backButtonWrapper {
     position: absolute;
     top: 2rem;
     left: 2rem;
-    z-index: 10;
+    z-index: 100;
+}
+
+.profileWrapper {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
 }
 
 .titulo {
@@ -142,11 +152,88 @@
     cursor: pointer;
     transition: all 0.3s ease;
     font-size: 1.1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
 }
 
 .timeButton:hover {
     border-color: #ff0000;
     background-color: rgba(255, 0, 0, 0.1);
+}
+
+.horario {
+    font-size: 1.3rem;
+    font-weight: bold;
+}
+
+.sessaoDetalhes {
+    font-size: 0.9rem;
+    color: #ccc;
+}
+
+.sessaoDetalhes div {
+    margin: 0.2rem 0;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.loadingText {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ff0000;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.mensagemContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    width: 100%;
+    padding: 2rem;
+}
+
+.mensagemIndisponivel {
+    font-size: 1.5rem;
+    color: #ff0000;
+    text-align: center;
+    padding: 2rem;
+    border: 2px solid #ff0000;
+    border-radius: 12px;
+    background-color: rgba(255, 0, 0, 0.05);
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 @media (max-width: 768px) {

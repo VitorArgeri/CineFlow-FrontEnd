@@ -2,6 +2,7 @@ import React from "react";
 import Image from "next/image";
 import styles from "./pedidogerado.module.css";
 import Button from "@/components/Button";
+import ProfileLink from "@/components/ProfileLink";
 
 export default function Page() {
   return (
@@ -10,6 +11,9 @@ export default function Page() {
         <Button href="/bomboniere">
           VOLTAR
         </Button>
+      </div>
+      <div className={styles.profileWrapper}>
+        <ProfileLink />
       </div>
       
       <div className={styles.logo}>

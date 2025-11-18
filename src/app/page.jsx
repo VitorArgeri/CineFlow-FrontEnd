@@ -1,10 +1,14 @@
 import React from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
+import ProfileLink from "@/components/ProfileLink";
 
 export default function Page() {
   return (
     <div className={styles.container}>
+      <div className={styles.profileWrapper}>
+        <ProfileLink />
+      </div>
       
       <div className={styles.logo}>
         <span className={styles.cine}>Cine</span>

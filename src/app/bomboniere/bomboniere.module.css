@@ -3,13 +3,21 @@
     min-height: 100vh;
     background-color: var(--background-color);
     color: var(--white-color);
+    position: relative;
 }
 
 .backButtonWrapper {
     position: absolute;
-    top: 1rem;
+    top: 2rem;
     left: 2rem;
-    z-index: 10;
+    z-index: 100;
+}
+
+.profileWrapper {
+    position: absolute;
+    top: 2rem;
+    right: 2rem;
+    z-index: 100;
 }
 
 .header {
@@ -19,7 +27,6 @@
     padding: 1rem 2rem;
     background-color: #000;
     border-bottom: 1px solid #333;
-    position: relative;
 }
 
 .logo {

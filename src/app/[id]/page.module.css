@@ -1,0 +1,371 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #000;
+    color: white;
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    overflow-x: hidden;
+}
+
+.loadingContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    width: 100%;
+    background-color: #000;
+    position: absolute;
+    top: 0;
+    left: 0;
+}
+
+.loadingText {
+    font-size: 3rem;
+    font-weight: bold;
+    color: #ff0000;
+    text-align: center;
+    animation: pulse 1.5s ease-in-out infinite;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        opacity: 1;
+    }
+    50% {
+        opacity: 0.5;
+    }
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    padding: 0 2rem;
+    margin-top: 40px;
+    margin-bottom: 50px;
+}
+
+.backButtonContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-start;
+    padding-left: 2rem;
+}
+
+.profileContainer {
+    flex: 1;
+    display: flex;
+    justify-content: flex-end;
+    padding-right: 2rem;
+}
+
+/* Logo CineFlow */
+.logo {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.cine {
+    color: #ff1a1a;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.flow {
+    color: #2b4eff;
+    font-size: 48px;
+    font-weight: 700;
+}
+
+.glasses {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #333;
+    border-radius: 8px;
+    padding: 8px;
+    margin: 0 10px;
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+}
+
+.lensLeft {
+    width: 30px;
+    height: 25px;
+    background-color: #2b9fff;
+    margin-right: 6px;
+    border-radius: 2px;
+}
+
+.lensRight {
+    width: 30px;
+    height: 25px;
+    background-color: #ff2b2b;
+    border-radius: 2px;
+}
+
+.linha {
+    width: 100%;
+    height: 1px;
+    background-color: #ff0000;
+    margin-bottom: 2rem;
+}
+
+.titulo {
+    font-size: 2rem;
+    font-weight: bold;
+    margin-bottom: 2rem;
+    text-align: center;
+}
+
+/* Seletor de Datas */
+.datasContainer {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 3rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    max-width: 100%;
+    padding: 0 1rem;
+}
+
+.dataBtn {
+    background-color: #555;
+    border: none;
+    padding: 0.75rem 1.5rem;
+    color: white;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    font-weight: bold;
+    border-radius: 4px;
+    min-width: 100px;
+}
+
+.dataBtn:hover {
+    background-color: #777;
+}
+
+.dataBtnAtiva {
+    background-color: #ff0000;
+}
+
+.dataLabel {
+    font-size: 0.9rem;
+    margin-bottom: 0.25rem;
+}
+
+.dataNumero {
+    font-size: 0.85rem;
+}
+
+/* Card do Filme */
+.filmeCard {
+    display: flex;
+    gap: 2rem;
+    background-color: rgba(85, 85, 85, 0.5);
+    padding: 2rem;
+    border-radius: 12px;
+    max-width: 900px;
+    width: 90%;
+    margin-bottom: 3rem;
+    box-sizing: border-box;
+}
+
+.filmeImageContainer {
+    flex-shrink: 0;
+}
+
+.filmeImage {
+    width: 200px;
+    height: 300px;
+    object-fit: cover;
+    border-radius: 8px;
+}
+
+.filmeInfo {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.filmeNome {
+    font-size: 2rem;
+    font-weight: bold;
+    margin: 0;
+}
+
+.filmeMetadata {
+    font-size: 1.1rem;
+    color: #ddd;
+    margin: 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.classificacao {
+    padding: 0.3rem 0.6rem;
+    border-radius: 4px;
+    font-weight: bold;
+    font-size: 0.9rem;
+}
+
+.classificacaoLivre {
+    background-color: #00a82d;
+    color: white;
+}
+
+.classificacao6 {
+    background-color: #0094d9;
+    color: white;
+}
+
+.classificacao10 {
+    background-color: #0094d9;
+    color: white;
+}
+
+.classificacao12 {
+    background-color: #f9a50a;
+    color: white;
+}
+
+.classificacao14 {
+    background-color: #f57c00;
+    color: white;
+}
+
+.classificacao16 {
+    background-color: #e8141b;
+    color: white;
+}
+
+.classificacao18 {
+    background-color: #000000;
+    color: white;
+    border: 1px solid #fff;
+}
+
+.sinopseContainer {
+    flex: 1;
+}
+
+.filmeSinopse {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: #ccc;
+    text-align: justify;
+}
+
+/* Sessões */
+.sessoesContainer {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 1.5rem;
+    justify-content: center;
+    max-width: 900px;
+    width: 100%;
+    padding-bottom: 3rem;
+    margin-bottom: 2rem;
+}
+
+.sessaoCard {
+    background-color: rgba(85, 85, 85, 0.7);
+    padding: 1.5rem 2rem;
+    border-radius: 8px;
+    text-align: center;
+    min-width: 150px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.sessaoCard:hover {
+    background-color: rgba(255, 0, 0, 0.3);
+    transform: scale(1.05);
+}
+
+.sessaoHorario {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 0.5rem;
+}
+
+.sessaoInfo {
+    font-size: 0.9rem;
+    color: #ddd;
+}
+
+.sessaoInfo p {
+    margin: 0.25rem 0;
+}
+
+/* Mensagens */
+.mensagemContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 200px;
+    width: 100%;
+    max-width: 900px;
+    padding-bottom: 3rem;
+}
+
+.mensagemIndisponivel {
+    font-size: 1.5rem;
+    color: #ff0000;
+    text-align: center;
+    padding: 2rem;
+    border: 2px solid #ff0000;
+    border-radius: 12px;
+    background-color: rgba(255, 0, 0, 0.05);
+    animation: fadeIn 0.5s ease-in;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsividade */
+@media (max-width: 768px) {
+    .filmeCard {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .filmeImage {
+        width: 100%;
+        max-width: 300px;
+        height: auto;
+    }
+
+    .datasContainer {
+        gap: 0.5rem;
+    }
+
+    .dataBtn {
+        min-width: 80px;
+        padding: 0.5rem 1rem;
+    }
+
+    .titulo {
+        font-size: 1.5rem;
+    }
+
+    .filmeNome {
+        font-size: 1.5rem;
+    }
+}
