@@ -118,7 +118,12 @@ export default function AdminLoginPage() {
           </button>
         </div>
 
-        
+        <a href="/forgot-password" className={styles.forgotPassword}>
+          Esqueci minha senha?
+        </a>
+        <a href="/cadastros" className={styles.forgotPassword}>
+          Não possui um cadastro? <span style={{ color: "#989898" }}>Cadastre-se</span>
+        </a>
         
         <Button className={styles.submit} type="submit" disabled={loading}>
           {loading ? "ENTRANDO..." : "ENTRAR"}
