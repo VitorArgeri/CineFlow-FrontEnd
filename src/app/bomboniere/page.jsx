@@ -61,9 +61,6 @@ export default function App() {
                         <span className={styles.flow}>Flow</span>
                     </span>
                 </div>
-                <div className={styles.userInfo}>
-                    <span>FILME: EU AINDA ESTOU AQUI | SESSÃO: 21:00H | INGRESSOS: R$ 6</span>
-                </div>
                 <div className={styles.profileWrapper}>
                     <ProfileLink />
                 </div>
@@ -72,6 +69,9 @@ export default function App() {
             <main className={styles.main}>
                 <div className={styles.titleSection}>
                     <h1 className={styles.title}>ADICIONE LANCHES AO SEU PEDIDO</h1>
+                    <div className={styles.userInfo}>
+                        <span>FILME: .... | SESSÃO: 21:00H | INGRESSOS: R$ 6</span>
+                    </div>
                 </div>
 
                 <div className={styles.alimentosGrid}>
