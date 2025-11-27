@@ -19,5 +19,11 @@ npm run dev
 npm run dev
 ```
 
+### O que fazer ainda
+- Ultima pagina (MIGUEL)
+- Simplificar o código
+- Arrumar a Header
+- Estruturar certinho
+
 ## Acessar
 http://localhost:3000

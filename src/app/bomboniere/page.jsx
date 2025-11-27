@@ -1,13 +1,13 @@
-'use client'
-import { useEffect, useState } from 'react'
-import styles from './bomboniere.module.css'
-import axios from 'axios'
-import Button from '@/components/Button'
-import ProfileLink from '@/components/ProfileLink'
+"use client"
+import { useEffect, useState } from "react"
+import styles from "./bomboniere.module.css"
+import axios from "axios"
+import SiteHeader from "@/components/SiteHeader"
 
 export default function App() {
-  const [alimentos, setAlimentos] = useState([])
-  const [carrinho, setCarrinho] = useState({}) // Estado para gerenciar quantidades
+    const [alimentos, setAlimentos] = useState([])
+    const [carrinho, setCarrinho] = useState({}) // Estado para gerenciar quantidades
+    const [pedidoInfo, setPedidoInfo] = useState(null)
 
   useEffect(() => {
     async function buscarAlimentos() {
@@ -26,8 +26,19 @@ export default function App() {
       }
     }
 
-    buscarAlimentos()
+        buscarAlimentos()
   }, [])
+
+    useEffect(() => {
+        try {
+            const stored = sessionStorage.getItem("cineflow-assentos-selecionados")
+            if (stored) {
+                setPedidoInfo(JSON.parse(stored))
+            }
+        } catch (error) {
+            console.warn("Não foi possível carregar o resumo da sessão", error)
+        }
+    }, [])
 
   const adicionarItem = (id) => {
     setCarrinho(prev => ({
@@ -37,40 +48,38 @@ export default function App() {
   }
 
   const removerItem = (id) => {
-    setCarrinho(prev => ({
-      ...prev,
-      [id]: Math.max((prev[id] || 0) - 1, 0)
-    }))
+        setCarrinho(prev => ({
+            ...prev,
+            [id]: Math.max((prev[id] || 0) - 1, 0)
+        }))
   }
+
+    const formatarHora = (dataIso) => {
+        if (!dataIso) return "--:--"
+        return new Date(dataIso).toLocaleTimeString("pt-BR", {
+            hour: "2-digit",
+            minute: "2-digit"
+        })
+    }
+
+    const resumoSessao = pedidoInfo
+        ? `FILME: ${pedidoInfo.filmeNome || "-"} | SESSÃO: ${formatarHora(pedidoInfo.dataHora)} | SALA: ${pedidoInfo.salaId || "-"}`
+        : "FILME: .... | SESSÃO: --:-- | SALA: --"
+
+        const resumoIngressos = pedidoInfo?.quantidade
+            ? `ASSENTOS: ${pedidoInfo.assentos?.map(seat => seat.posicao || seat.id).join(", ") || pedidoInfo.quantidade} | INGRESSOS: ${pedidoInfo.quantidade}`
+            : "ASSENTOS: -- | INGRESSOS: --"
 
     return (
         <div className={styles.container}>
-            <div className={styles.backButtonWrapper}>
-                <Button href="/Filmes">
-                    VOLTAR
-                </Button>
-            </div>
-            <header className={styles.header}>
-                <div className={styles.logo}>
-                    <span className={styles.logoText}>
-                        <span className={styles.cine}>Cine</span>
-                        <div className={styles.glasses}>
-                            <div className={styles.lensLeft}></div>
-                            <div className={styles.lensRight}></div>
-                        </div>
-                        <span className={styles.flow}>Flow</span>
-                    </span>
-                </div>
-                <div className={styles.profileWrapper}>
-                    <ProfileLink />
-                </div>
-            </header>
+                        <SiteHeader className={styles.header} backHref="/Filmes" />
 
             <main className={styles.main}>
                 <div className={styles.titleSection}>
                     <h1 className={styles.title}>ADICIONE LANCHES AO SEU PEDIDO</h1>
                     <div className={styles.userInfo}>
-                        <span>FILME: .... | SESSÃO: 21:00H | INGRESSOS: R$ 6</span>
+                                                <span>{resumoSessao}</span>
+                                                <span>{resumoIngressos}</span>
                     </div>
                 </div>
 

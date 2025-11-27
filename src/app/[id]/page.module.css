@@ -284,6 +284,8 @@
     min-width: 150px;
     cursor: pointer;
     transition: all 0.3s ease;
+    border: none;
+    color: inherit;
 }
 
 .sessaoCard:hover {
@@ -328,6 +330,139 @@
     animation: fadeIn 0.5s ease-in;
 }
 
+.editSection {
+    width: 100%;
+    max-width: 1040px;
+    margin: 2rem auto 3rem;
+    padding: 2rem 2.5rem;
+    background: linear-gradient(135deg, rgba(24, 7, 255, 0.12), rgba(255, 0, 0, 0.12));
+    border: 1px solid rgba(255, 0, 0, 0.3);
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.45);
+}
+
+.editTitle {
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: var(--white-color, #ffffff);
+    margin-bottom: 0.5rem;
+}
+
+.editSubtitle {
+    color: var(--gray-color, #727272);
+    margin-bottom: 1.5rem;
+    line-height: 1.5;
+}
+
+.editForm {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.formGrid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.editField {
+    display: flex;
+    flex-direction: column;
+    gap: 0.4rem;
+    font-weight: 500;
+    color: var(--white-color, #ffffff);
+}
+
+.editField span {
+    font-size: 0.9rem;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    color: var(--light-blue, #8F87FC);
+}
+
+.editField input,
+.editField select,
+.editField textarea {
+    padding: 0.9rem 1rem;
+    border-radius: 10px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    background-color: rgba(3, 3, 3, 0.65);
+    color: var(--white-color, #ffffff);
+    font-size: 1rem;
+    transition: border 0.3s ease, box-shadow 0.3s ease;
+}
+
+.editField input:focus,
+.editField select:focus,
+.editField textarea:focus {
+    outline: none;
+    border-color: var(--blue-color, #1807ff);
+    box-shadow: 0 0 0 2px rgba(24, 7, 255, 0.25);
+}
+
+.editField textarea {
+    resize: vertical;
+    min-height: 140px;
+}
+
+.editActions {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem;
+}
+
+.saveButton {
+    padding: 0.95rem 2.5rem;
+    border: none;
+    border-radius: 999px;
+    font-weight: 700;
+    letter-spacing: 1px;
+    cursor: pointer;
+    background: linear-gradient(90deg, var(--red-color, #ff0000), var(--blue-color, #1807ff));
+    color: #fff;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.saveButton:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(255, 0, 0, 0.35);
+}
+
+.saveButton:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+.feedbackSuccess,
+.feedbackError {
+    font-size: 0.95rem;
+    font-weight: 600;
+}
+
+.feedbackSuccess {
+    color: var(--light-blue, #8F87FC);
+}
+
+.feedbackError {
+    color: var(--red-color, #ff0000);
+}
+
+.authNotice {
+    width: 100%;
+    max-width: 600px;
+    margin: 2rem auto 3rem;
+    padding: 1.75rem;
+    text-align: center;
+    border: 1px dashed rgba(255, 255, 255, 0.3);
+    border-radius: 12px;
+    background-color: rgba(24, 7, 255, 0.08);
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 @keyframes fadeIn {
     from {
         opacity: 0;
@@ -367,5 +502,18 @@
 
     .filmeNome {
         font-size: 1.5rem;
+    }
+
+    .editSection {
+        padding: 1.5rem;
+    }
+
+    .formGrid {
+        grid-template-columns: 1fr;
+    }
+
+    .editActions {
+        flex-direction: column;
+        align-items: stretch;
     }
 }

@@ -24,9 +24,11 @@
   z-index: 100;
 }
 
-.profileWrapper {
+
+.header {
   position: absolute;
   top: 2rem;
+  left: 2rem;
   right: 2rem;
   z-index: 100;
 }

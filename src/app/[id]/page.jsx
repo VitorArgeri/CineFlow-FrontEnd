@@ -3,15 +3,21 @@ import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
 import Button from "@/components/Button";
-import ProfileLink from "@/components/ProfileLink";
+import SiteHeader from "@/components/SiteHeader";
+import { useRouter } from "next/navigation";
 
 export default function DetalhesFilme({ params }) {
     const unwrappedParams = use(params);
+    const router = useRouter();
     const [filme, setFilme] = useState(null);
     const [sessoes, setSessoes] = useState([]);
     const [loading, setLoading] = useState(true);
     const [dataSelecionada, setDataSelecionada] = useState(null);
     const [datasDisponiveis, setDatasDisponiveis] = useState([]);
+    const [isAuthenticated, setIsAuthenticated] = useState(false);
+    const [authToken, setAuthToken] = useState(null);
+    const [editFormData, setEditFormData] = useState(null);
+    const [editFeedback, setEditFeedback] = useState({ success: "", error: "", saving: false });
 
     useEffect(() => {
         const fetchFilmeData = async () => {
@@ -20,6 +26,14 @@ export default function DetalhesFilme({ params }) {
                 // Buscar dados do filme
                 const filmeResponse = await axios.get(`http://localhost:5000/filmes/${unwrappedParams.id}`);
                 setFilme(filmeResponse.data);
+                setEditFormData({
+                    nome: filmeResponse.data?.nome || "",
+                    classificacaoIndicativa: filmeResponse.data?.classificacaoIndicativa || "",
+                    duracaoMinutos: filmeResponse.data?.duracaoMinutos ?? "",
+                    genero: filmeResponse.data?.genero || "",
+                    sinopse: filmeResponse.data?.sinopse || "",
+                    imgUrl: filmeResponse.data?.imgUrl || ""
+                });
 
                 // Buscar sessões do filme
                 const sessoesResponse = await axios.get(`http://localhost:5000/sessoes?filmeId=${unwrappedParams.id}`);
@@ -41,6 +55,17 @@ export default function DetalhesFilme({ params }) {
 
         fetchFilmeData();
     }, [unwrappedParams.id]);
+
+    useEffect(() => {
+        try {
+            const token = localStorage.getItem("userToken");
+            setIsAuthenticated(!!token);
+            setAuthToken(token);
+        } catch (_) {
+            setIsAuthenticated(false);
+            setAuthToken(null);
+        }
+    }, []);
 
     // Extrair datas únicas das sessões disponíveis
     const extrairDatasUnicas = (sessoes) => {
@@ -78,6 +103,54 @@ export default function DetalhesFilme({ params }) {
         return Array.from(datasMap.values()).sort((a, b) => a.dataCompleta - b.dataCompleta);
     };
 
+    const classificacaoOptions = [
+        { label: "Livre", value: "1" },
+        { label: "6 anos", value: "6" },
+        { label: "10 anos", value: "10" },
+        { label: "12 anos", value: "12" },
+        { label: "14 anos", value: "14" },
+        { label: "16 anos", value: "16" },
+        { label: "18 anos", value: "18" }
+    ];
+
+    const handleEditChange = (field, value) => {
+        setEditFormData((prev) => ({
+            ...(prev || {}),
+            [field]: field === "duracaoMinutos" ? value.replace(/[^0-9]/g, "") : value
+        }));
+    };
+
+    const handleEditSubmit = async (event) => {
+        event.preventDefault();
+
+        if (!authToken) {
+            setEditFeedback({ success: "", error: "Você precisa estar logado para editar.", saving: false });
+            return;
+        }
+
+        setEditFeedback({ success: "", error: "", saving: true });
+
+        const payload = {
+            ...editFormData,
+            duracaoMinutos: Number(editFormData?.duracaoMinutos) || 0
+        };
+
+        try {
+            await axios.put(`http://localhost:5000/filmes/${unwrappedParams.id}`, payload, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`,
+                    "Content-Type": "application/json"
+                }
+            });
+            setFilme((prev) => ({ ...prev, ...payload }));
+            setEditFeedback({ success: "Filme atualizado com sucesso!", error: "", saving: false });
+        } catch (error) {
+            console.error("Erro ao atualizar filme", error);
+            const message = error?.response?.data?.message || "Não foi possível atualizar o filme.";
+            setEditFeedback({ success: "", error: message, saving: false });
+        }
+    };
+
     // Filtrar sessões pela data selecionada
     const sessoesFiltradas = dataSelecionada ? sessoes.filter(sessao => {
         const dataSessao = new Date(sessao.dataHora);
@@ -86,6 +159,11 @@ export default function DetalhesFilme({ params }) {
         dataSelec.setHours(0, 0, 0, 0);
         return dataSessao.getTime() === dataSelec.getTime();
     }) : [];
+
+    const handleSessaoClick = (sessao) => {
+        if (!sessao?.id) return;
+        router.push(`/sessoes/${sessao.id}`);
+    };
 
     if (loading) {
         return (
@@ -105,22 +183,7 @@ export default function DetalhesFilme({ params }) {
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.backButtonContainer}>
-                    <Button href="/Filmes">VOLTAR</Button>
-                </div>
-                <div className={styles.logo}>
-                    <span className={styles.cine}>Cine</span>
-                    <div className={styles.glasses}>
-                        <div className={styles.lensLeft}></div>
-                        <div className={styles.lensRight}></div>
-                    </div>
-                    <span className={styles.flow}>Flow</span>
-                </div>
-                <div className={styles.profileContainer}>
-                    <ProfileLink />
-                </div>
-            </div>
+            <SiteHeader className={styles.header} backHref="/Filmes" />
 
             <div className={styles.linha}></div>
 
@@ -183,6 +246,95 @@ export default function DetalhesFilme({ params }) {
                 </div>
             )}
 
+            {isAuthenticated ? (
+                <section className={styles.editSection}>
+                    <h2 className={styles.editTitle}>Editar informações do filme</h2>
+                    <p className={styles.editSubtitle}>Atualize o título, a classificação indicativa, o gênero, a duração ou a sinopse e salve para manter os dados alinhados com o cartaz.</p>
+
+                    <form className={styles.editForm} onSubmit={handleEditSubmit}>
+                        <div className={styles.formGrid}>
+                            <label className={styles.editField}>
+                                <span>Nome</span>
+                                <input
+                                    type="text"
+                                    value={editFormData?.nome || ''}
+                                    onChange={(event) => handleEditChange('nome', event.target.value)}
+                                    required
+                                />
+                            </label>
+
+                            <label className={styles.editField}>
+                                <span>Classificação</span>
+                                <select
+                                    value={editFormData?.classificacaoIndicativa || ''}
+                                    onChange={(event) => handleEditChange('classificacaoIndicativa', event.target.value)}
+                                    required
+                                >
+                                    <option value="" disabled>Selecione</option>
+                                    {classificacaoOptions.map((opt) => (
+                                        <option key={opt.value} value={opt.value}>{opt.label}</option>
+                                    ))}
+                                </select>
+                            </label>
+
+                            <label className={styles.editField}>
+                                <span>Duração (min)</span>
+                                <input
+                                    type="text"
+                                    inputMode="numeric"
+                                    value={editFormData?.duracaoMinutos ?? ''}
+                                    onChange={(event) => handleEditChange('duracaoMinutos', event.target.value)}
+                                    required
+                                />
+                            </label>
+
+                            <label className={styles.editField}>
+                                <span>Gênero</span>
+                                <input
+                                    type="text"
+                                    value={editFormData?.genero || ''}
+                                    onChange={(event) => handleEditChange('genero', event.target.value)}
+                                    required
+                                />
+                            </label>
+                        </div>
+
+                        <label className={styles.editField}>
+                            <span>Sinopse</span>
+                            <textarea
+                                rows={4}
+                                value={editFormData?.sinopse || ''}
+                                onChange={(event) => handleEditChange('sinopse', event.target.value)}
+                                placeholder="Descreva a trama em poucas linhas"
+                            />
+                        </label>
+
+                        <label className={styles.editField}>
+                            <span>Imagem (URL)</span>
+                            <input
+                                type="url"
+                                value={editFormData?.imgUrl || ''}
+                                onChange={(event) => handleEditChange('imgUrl', event.target.value)}
+                                placeholder="https://exemplo.com/cartaz.jpg"
+                            />
+                        </label>
+
+                        <div className={styles.editActions}>
+                            <button type="submit" className={styles.saveButton} disabled={editFeedback.saving}>
+                                {editFeedback.saving ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
+                            </button>
+                            {editFeedback.success && <span className={styles.feedbackSuccess}>{editFeedback.success}</span>}
+                            {editFeedback.error && <span className={styles.feedbackError}>{editFeedback.error}</span>}
+                        </div>
+                    </form>
+                </section>
+            ) : (
+                <section className={styles.authNotice}>
+                    <p>Entre com sua conta para liberar a edição das informações do filme.</p>
+                    <Button href="/login">FAZER LOGIN</Button>
+                </section>
+            )}
+
             {/* Sessões disponíveis */}
             {datasDisponiveis.length > 0 && (
                 <>
@@ -200,13 +352,18 @@ export default function DetalhesFilme({ params }) {
                                     minute: '2-digit'
                                 });
                                 return (
-                                    <div key={sessao.id} className={styles.sessaoCard}>
+                                    <button
+                                        key={sessao.id}
+                                        type="button"
+                                        className={styles.sessaoCard}
+                                        onClick={() => handleSessaoClick(sessao)}
+                                    >
                                         <div className={styles.sessaoHorario}>{horario}</div>
                                         <div className={styles.sessaoInfo}>
                                             <p>{sessao.tipo}</p>
                                             <p>{sessao.dublagem}</p>
                                         </div>
-                                    </div>
+                                    </button>
                                 );
                             })}
                         </div>

@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./filmes.module.css";
 import Button from "@/components/Button";
-import ProfileLink from "@/components/ProfileLink";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function Filmes() {
     const [filmes, setFilmes] = useState([]);
@@ -53,24 +53,7 @@ export default function Filmes() {
 
     return (
         <div className={styles.container}>
-            <div className={styles.header}>
-                <div className={styles.backButtonContainer}>
-                    <Button href="/">
-                        VOLTAR
-                    </Button>
-                </div>
-                <div className={styles.logo}>
-                    <span className={styles.cine}>Cine</span>
-                    <div className={styles.glasses}>
-                        <div className={styles.lensLeft}></div>
-                        <div className={styles.lensRight}></div>
-                    </div>
-                    <span className={styles.flow}>Flow</span>
-                </div>
-                <div className={styles.profileContainer}>
-                    <ProfileLink />
-                </div>
-            </div>
+            <SiteHeader className={styles.header} backHref="/" />
             <div className={styles.tabContainer}>
                 <button
                     className={`${styles.tab} ${activeTab === 'Em Cartaz' ? styles.activeTab : ''}`}

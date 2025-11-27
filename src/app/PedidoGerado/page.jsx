@@ -1,29 +1,12 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./pedidogerado.module.css";
-import Button from "@/components/Button";
-import ProfileLink from "@/components/ProfileLink";
+import SiteHeader from "@/components/SiteHeader";
 
 export default function Page() {
   return (
     <div className={styles.container}>
-      <div className={styles.backButtonWrapper}>
-        <Button href="/bomboniere">
-          VOLTAR
-        </Button>
-      </div>
-      <div className={styles.profileWrapper}>
-        <ProfileLink />
-      </div>
-      
-      <div className={styles.logo}>
-        <span className={styles.cine}>Cine</span>
-        <div className={styles.glasses}>
-          <div className={styles.lensLeft}></div>
-          <div className={styles.lensRight}></div>
-        </div>
-        <span className={styles.flow}>Flow</span>
-      </div>
+      <SiteHeader className={styles.header} backHref="/bomboniere" />
 
       
       <h1 className={styles.successText}>PEDIDO REALIZADO COM SUCESSO !</h1>
