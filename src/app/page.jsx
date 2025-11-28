@@ -1,7 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
-import ProfileLink from "@/components/ProfileLink";
+import ProfileLink from "@/components/ProfileLink/page";
 
 export default function Page() {
   return (

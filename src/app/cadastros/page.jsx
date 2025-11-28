@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./cadastros.module.css";
-import Button from "@/components/Button";
+import Button from "@/components/Button/page";
 
 export default function RegisterPage() {
     const router = useRouter();

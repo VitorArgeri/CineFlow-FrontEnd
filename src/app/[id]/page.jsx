@@ -2,8 +2,8 @@
 import React, { useState, useEffect, use } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
-import Button from "@/components/Button";
-import SiteHeader from "@/components/SiteHeader";
+import Button from "@/components/Button/page";
+import SiteHeader from "@/components/Header/page";
 import { useRouter } from "next/navigation";
 
 export default function DetalhesFilme({ params }) {
@@ -18,6 +18,7 @@ export default function DetalhesFilme({ params }) {
     const [authToken, setAuthToken] = useState(null);
     const [editFormData, setEditFormData] = useState(null);
     const [editFeedback, setEditFeedback] = useState({ success: "", error: "", saving: false });
+    const [deleteLoading, setDeleteLoading] = useState(false);
 
     useEffect(() => {
         const fetchFilmeData = async () => {
@@ -151,6 +152,34 @@ export default function DetalhesFilme({ params }) {
         }
     };
 
+    const handleDeleteFilme = async () => {
+        if (!authToken) {
+            setEditFeedback({ success: "", error: "Você precisa estar logado para deletar o filme.", saving: false });
+            return;
+        }
+
+        const confirmed = window.confirm("Deseja realmente deletar este filme? Esta ação não pode ser desfeita.");
+        if (!confirmed) return;
+
+        setDeleteLoading(true);
+        setEditFeedback((prev) => ({ ...prev, success: "", error: "", saving: false }));
+
+        try {
+            await axios.delete(`http://localhost:5000/filmes/${unwrappedParams.id}`, {
+                headers: {
+                    Authorization: `Bearer ${authToken}`
+                }
+            });
+            router.push("/Filmes");
+        } catch (error) {
+            console.error("Erro ao deletar filme", error);
+            const message = error?.response?.data?.message || "Não foi possível deletar o filme.";
+            setEditFeedback({ success: "", error: message, saving: false });
+        } finally {
+            setDeleteLoading(false);
+        }
+    };
+
     // Filtrar sessões pela data selecionada
     const sessoesFiltradas = dataSelecionada ? sessoes.filter(sessao => {
         const dataSessao = new Date(sessao.dataHora);
@@ -183,11 +212,8 @@ export default function DetalhesFilme({ params }) {
 
     return (
         <div className={styles.container}>
-            <SiteHeader className={styles.header} backHref="/Filmes" />
+            <SiteHeader backHref="/Filmes" />
 
-            <div className={styles.linha}></div>
-
-            {/* Título */}
             <h1 className={styles.titulo}>SELECIONE A SESSÃO</h1>
 
             {/* Seletor de datas */}
@@ -246,7 +272,7 @@ export default function DetalhesFilme({ params }) {
                 </div>
             )}
 
-            {isAuthenticated ? (
+            {isAuthenticated && (
                 <section className={styles.editSection}>
                     <h2 className={styles.editTitle}>Editar informações do filme</h2>
                     <p className={styles.editSubtitle}>Atualize o título, a classificação indicativa, o gênero, a duração ou a sinopse e salve para manter os dados alinhados com o cartaz.</p>
@@ -320,18 +346,25 @@ export default function DetalhesFilme({ params }) {
                         </label>
 
                         <div className={styles.editActions}>
-                            <button type="submit" className={styles.saveButton} disabled={editFeedback.saving}>
-                                {editFeedback.saving ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
+                            <div className={styles.actionGroup}>
+                                <button type="submit" className={`${styles.actionButton} ${styles.saveButton}`} disabled={editFeedback.saving}>
+                                    {editFeedback.saving ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
+                                </button>
+                                <div className={styles.feedbackWrapper}>
+                                    {editFeedback.success && <span className={styles.feedbackSuccess}>{editFeedback.success}</span>}
+                                    {editFeedback.error && <span className={styles.feedbackError}>{editFeedback.error}</span>}
+                                </div>
+                            </div>
+                            <button
+                                type="button"
+                                className={`${styles.actionButton} ${styles.deleteButton}`}
+                                onClick={handleDeleteFilme}
+                                disabled={deleteLoading}
+                            >
+                                {deleteLoading ? 'DELETANDO...' : 'DELETAR'}
                             </button>
-                            {editFeedback.success && <span className={styles.feedbackSuccess}>{editFeedback.success}</span>}
-                            {editFeedback.error && <span className={styles.feedbackError}>{editFeedback.error}</span>}
                         </div>
                     </form>
-                </section>
-            ) : (
-                <section className={styles.authNotice}>
-                    <p>Entre com sua conta para liberar a edição das informações do filme.</p>
-                    <Button href="/login">FAZER LOGIN</Button>
                 </section>
             )}
 

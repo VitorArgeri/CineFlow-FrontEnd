@@ -2,21 +2,21 @@
   position: absolute;
   top: 0;
   left: 0;
-  height: 100%;
+  min-height: 100vh;
   width: 100%;
   background-color: #000;
   display: flex;
-  flex-direction: column;
   justify-content: center;
   align-items: center;
   color: white;
   overflow: hidden;
+  padding: clamp(1.5rem, 4vh, 3rem) 0;
 }
 
 .backButtonWrapper {
   position: absolute;
-  top: 2rem;
-  left: 2rem;
+  top: clamp(1rem, 3vw, 2rem);
+  left: clamp(1rem, 3vw, 2rem);
   z-index: 100;
 }
 
@@ -26,12 +26,16 @@
   border-radius: 12px;
   border: 2px solid red;
   box-shadow: 0 10px 40px rgba(255, 0, 0, 0.2);
-  padding: 4rem;
-  width: 100%;
-  max-width: 480px;
+  padding: clamp(2rem, 4vw, 3rem);
+  width: min(540px, calc(100% - 2.5rem));
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
+  min-height: 82vh;
+  justify-content: center;
+  overflow: visible;
+  box-sizing: border-box;
+  margin: 0 auto;
 }
 
 .logo {
@@ -43,13 +47,13 @@
 
 .cine {
   color: #ff1a1a;
-  font-size: 64px;
+  font-size: clamp(2.75rem, 8vw, 4.25rem);
   font-weight: 700;
 }
 
 .flow {
   color: #2b4eff;
-  font-size: 64px;
+  font-size: clamp(2.75rem, 8vw, 4.25rem);
   font-weight: 700;
 }
 
@@ -80,22 +84,16 @@
   border-radius: 2px;
 }
 
-.title {
-  font-size: 1.75rem;
-  font-weight: 700;
-  color: #fff;
-  text-align: center;
-  margin: 0 0 0.5rem 0;
+.logo {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 0.5rem;
 }
-
-.error {
-  background-color: #fed7d7;
-  color: #c53030;
-  padding: 0.75rem 1rem;
-  border-radius: 8px;
-  font-size: 0.9rem;
-  border-left: 4px solid #c53030;
-  animation: slideDown 0.3s ease-out;
+.cine,
+.flow {
+  font-size: clamp(2.4rem, 6.5vw, 3.6rem);
+  font-weight: 700;
 }
 
 @keyframes slideDown {
@@ -110,7 +108,7 @@
 }
 
 .label {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #fff;
   position: relative;
@@ -152,7 +150,7 @@
 }
 
 .forgotPassword {
-  font-size: 0.95rem;
+  font-size: 0.9rem;
   font-weight: 600;
   color: #2b4eff;
   text-decoration: none;
@@ -172,8 +170,8 @@
 }
 
 .toggle {
-  padding: 0.85rem 0.875rem;
-  font-size: 0.85rem;
+  padding: 0.78rem 0.9rem;
+  font-size: 0.8rem;
   font-weight: 600;
   color: #f80000;
   background-color: #383838;
@@ -202,7 +200,7 @@
 }
 
 .submit {
-  padding: 0.875rem 1.5rem;
+  padding: 0.9rem 1.5rem;
   font-size: 1rem;
   font-weight: 700;
   color: white;

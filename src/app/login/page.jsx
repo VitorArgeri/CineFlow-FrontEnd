@@ -3,7 +3,7 @@
 import React, { useState } from "react";
 import { useRouter } from "next/navigation";
 import styles from "./login.module.css";
-import Button from "@/components/Button";
+import Button from "@/components/Button/page";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -54,8 +54,18 @@ export default function LoginPage() {
         try {
           localStorage.setItem("userToken", data.token);
           localStorage.setItem("userId", data.userId);
-          if (data.name) localStorage.setItem("userName", data.name);
-          else if (data.user?.name) localStorage.setItem("userName", data.user.name);
+          const resolvedName =
+            data.name ||
+            data.nome ||
+            data.user?.name ||
+            data.user?.nome ||
+            data.usuario?.name ||
+            data.usuario?.nome ||
+            "";
+          if (resolvedName) {
+            localStorage.setItem("userName", resolvedName);
+            sessionStorage.setItem("userName", resolvedName);
+          }
         } catch (_) {}
         router.push("/Filmes");
       } else {

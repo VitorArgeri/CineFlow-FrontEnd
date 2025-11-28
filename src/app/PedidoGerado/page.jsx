@@ -1,12 +1,12 @@
 import React from "react";
 import Image from "next/image";
 import styles from "./pedidogerado.module.css";
-import SiteHeader from "@/components/SiteHeader";
+import SiteHeader from "@/components/Header/page";
 
 export default function Page() {
   return (
     <div className={styles.container}>
-      <SiteHeader className={styles.header} backHref="/bomboniere" />
+      <SiteHeader backHref="/bomboniere" />
 
       
       <h1 className={styles.successText}>PEDIDO REALIZADO COM SUCESSO !</h1>

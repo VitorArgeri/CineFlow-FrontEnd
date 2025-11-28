@@ -1,6 +1,6 @@
 "use client";
-import Button from "@/components/Button";
-import ProfileLink from "@/components/ProfileLink";
+import Button from "@/components/Button/page";
+import ProfileLink from "@/components/ProfileLink/page";
 import styles from "./SiteHeader.module.css";
 
 export default function SiteHeader({

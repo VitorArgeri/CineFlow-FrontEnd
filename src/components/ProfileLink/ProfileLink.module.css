@@ -1,0 +1,55 @@
+.profileLink {
+    display: inline-flex;
+}
+
+.profileImage {
+    cursor: pointer;
+    border-radius: 50%;
+    transition: transform 0.2s ease;
+    object-fit: cover;
+}
+
+.profileImage:hover {
+    transform: scale(1.05);
+}
+
+.greetingWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    gap: 1rem;
+    min-height: 75px;
+}
+
+.greetingBlock {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 0.35rem;
+}
+
+.greeting {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #fff;
+}
+
+.logoutButton {
+    padding: 0.35rem 0.85rem;
+    border-radius: 999px;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+    background: transparent;
+    color: #fff;
+    font-size: 0.8rem;
+    letter-spacing: 0.5px;
+    cursor: pointer;
+    transition: background 0.2s ease, color 0.2s ease;
+}
+
+.logoutButton:hover {
+    background: rgba(255, 255, 255, 0.15);
+}
+
+.avatarWrapper {
+    display: inline-flex;
+}

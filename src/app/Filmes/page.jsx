@@ -3,8 +3,8 @@ import React from "react";
 import { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./filmes.module.css";
-import Button from "@/components/Button";
-import SiteHeader from "@/components/SiteHeader";
+import Button from "@/components/Button/page";
+import SiteHeader from "@/components/Header/page";
 
 export default function Filmes() {
     const [filmes, setFilmes] = useState([]);
@@ -53,7 +53,7 @@ export default function Filmes() {
 
     return (
         <div className={styles.container}>
-            <SiteHeader className={styles.header} backHref="/" />
+            <SiteHeader backHref="/" />
             <div className={styles.tabContainer}>
                 <button
                     className={`${styles.tab} ${activeTab === 'Em Cartaz' ? styles.activeTab : ''}`}

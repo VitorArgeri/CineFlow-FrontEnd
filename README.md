@@ -22,7 +22,7 @@ npm run dev
 ### O que fazer ainda
 - Ultima pagina (MIGUEL)
 - Simplificar o código
-- Arrumar a Header
+- Arrumar a Header FEITO
 - Estruturar certinho
 
 ## Acessar

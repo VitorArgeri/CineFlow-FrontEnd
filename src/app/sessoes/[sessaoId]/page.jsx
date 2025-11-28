@@ -2,8 +2,8 @@
 import React, { useEffect, useState, use } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
-import Button from "@/components/Button";
-import SiteHeader from "@/components/SiteHeader";
+import Button from "@/components/Button/page";
+import SiteHeader from "@/components/Header/page";
 import { useRouter } from "next/navigation";
 
 const ordenarAssentos = (lista = []) => {
@@ -190,12 +190,9 @@ export default function AssentosSessao({ params }) {
     return (
         <div className={styles.container}>
             <SiteHeader
-                className={styles.header}
                 backHref={detalheFilmeHref}
                 backLabel="VOLTAR"
             />
-
-            <div className={styles.linha}></div>
 
             <section className={styles.sessionInfo}>
                                 <p className={styles.sessionSummary}>

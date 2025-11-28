@@ -110,13 +110,6 @@
     border-radius: 2px;
 }
 
-.linha {
-    width: 100%;
-    height: 1px;
-    background-color: #ff0000;
-    margin-bottom: 2rem;
-}
-
 .titulo {
     font-size: 2rem;
     font-weight: bold;
@@ -409,30 +402,53 @@
 .editActions {
     display: flex;
     flex-wrap: wrap;
-    align-items: center;
-    gap: 1rem;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 1.5rem;
+    width: 100%;
 }
 
-.saveButton {
+.actionGroup {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 0.75rem;
+    flex: 1 1 260px;
+}
+
+.actionButton {
     padding: 0.95rem 2.5rem;
     border: none;
     border-radius: 999px;
     font-weight: 700;
     letter-spacing: 1px;
     cursor: pointer;
-    background: linear-gradient(90deg, var(--red-color, #ff0000), var(--blue-color, #1807ff));
+    background-color: var(--red-color, #ff0000);
     color: #fff;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    transition: transform 0.2s ease, box-shadow 0.2s ease, opacity 0.2s ease;
 }
 
-.saveButton:hover:not(:disabled) {
+.actionButton:hover:not(:disabled) {
     transform: translateY(-2px);
     box-shadow: 0 10px 25px rgba(255, 0, 0, 0.35);
 }
 
-.saveButton:disabled {
+.actionButton:disabled {
     opacity: 0.6;
     cursor: not-allowed;
+}
+
+.saveButton {}
+
+.deleteButton {
+    margin-left: auto;
+}
+
+.feedbackWrapper {
+    min-height: 1.2rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
 }
 
 .feedbackSuccess,
