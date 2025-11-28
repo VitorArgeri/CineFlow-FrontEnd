@@ -22,8 +22,8 @@ npm run dev
 ### O que fazer ainda
 - Ultima pagina (MIGUEL)
 - Simplificar o código
-- Arrumar a Header FEITO
-- Estruturar certinho
+- Ideia do nome
+- Logout
 
 ## Acessar
 http://localhost:3000
