@@ -2,6 +2,7 @@
 import Button from "@/components/Button/page";
 import ProfileLink from "@/components/ProfileLink/page";
 import styles from "./SiteHeader.module.css";
+import { useState, useEffect, useCallback } from "react";
 
 export default function SiteHeader({
     backHref = "/",
@@ -13,6 +14,35 @@ export default function SiteHeader({
     buttonProps = {}
 }) {
     const wrapperClass = [styles.header, className].filter(Boolean).join(" ");
+
+    const [isLogged, setIsLogged] = useState(false);
+    const readToken = useCallback(() => {
+        try {
+            const token = localStorage.getItem("userToken");
+            setIsLogged(!!token);
+        } catch (_) {}
+    }, []);
+
+    useEffect(() => {
+        readToken();
+        const onStorage = (e) => {
+            if (!e || e.key !== "userToken") return;
+            readToken();
+        };
+        window.addEventListener("storage", onStorage);
+        return () => window.removeEventListener("storage", onStorage);
+    }, [readToken]);
+
+    const handleLogout = useCallback(() => {
+        try {
+            localStorage.removeItem("userToken");
+            localStorage.removeItem("userId");
+            localStorage.removeItem("userName");
+            sessionStorage.removeItem("userName");
+        } catch (_) {}
+        // redireciona para login
+        window.location.href = "/login";
+    }, []);
 
     const handleBackClick = (event) => {
         if (onBack) {
@@ -40,7 +70,16 @@ export default function SiteHeader({
     const renderRightSlot = () => {
         if (rightSlot) return rightSlot;
         if (!showProfile) return null;
-        return <ProfileLink />;
+        return (
+            <div className={styles.userArea}>
+                <ProfileLink />
+                {isLogged && (
+                    <Button onClick={handleLogout} className={styles.logoutBtn}>
+                        LOGOUT
+                    </Button>
+                )}
+            </div>
+        );
     };
 
     return (
