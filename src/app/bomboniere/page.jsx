@@ -265,7 +265,15 @@ export default function App() {
                                 }
                             </strong>
                         </div>
-                        <button className={styles.finalizarBtn}>
+                        <button 
+                            className={styles.finalizarBtn}
+                            onClick={() => {
+                                // Salva o carrinho no sessionStorage
+                                sessionStorage.setItem("cineflow-carrinho", JSON.stringify(carrinho));
+                                // Redireciona para a finalização
+                                window.location.href = "/finalizacao";
+                            }}
+                        >
                             Finalizar Pedido
                         </button>
                     </div>

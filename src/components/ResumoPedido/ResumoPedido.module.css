@@ -1,0 +1,323 @@
+.container {
+  width: 100%;
+  max-width: 1000px;
+  margin: 0 auto;
+}
+
+.title {
+  text-align: center;
+  color: white;
+  font-size: 2.5rem;
+  font-weight: 700;
+  margin-bottom: 40px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Seções */
+.section {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  margin-bottom: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.5s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.sectionTitle {
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: #333;
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  border-bottom: 2px solid #667eea;
+  padding-bottom: 10px;
+}
+
+/* Container de Ingressos */
+.ingressosContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  margin-bottom: 20px;
+}
+
+.ingressoCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 20px;
+  background: #f8f9fa;
+  border-left: 4px solid #667eea;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.ingressoCard:hover {
+  background: #f0f2f8;
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(102, 126, 234, 0.1);
+}
+
+.ingressoInfo {
+  flex: 1;
+}
+
+.filmeName {
+  font-size: 1.2rem;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.detalhes {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: 10px;
+}
+
+.detalhe {
+  margin: 0;
+  font-size: 0.95rem;
+  color: #555;
+}
+
+.detalhe strong {
+  color: #667eea;
+  font-weight: 600;
+}
+
+.priceIngresso {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #667eea;
+  min-width: 120px;
+  text-align: right;
+}
+
+/* Container de Lanches */
+.lanchesContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.lanchCard {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 15px;
+  background: #f8f9fa;
+  border-left: 4px solid #764ba2;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+}
+
+.lanchCard:hover {
+  background: #f5f0fa;
+  transform: translateX(5px);
+  box-shadow: 0 4px 12px rgba(118, 75, 162, 0.1);
+}
+
+.lanchInfo {
+  flex: 1;
+}
+
+.lancheName {
+  font-size: 1.1rem;
+  font-weight: 600;
+  color: #333;
+  margin: 0 0 5px 0;
+}
+
+.quantidade {
+  margin: 0;
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.priceLanche {
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: #764ba2;
+  min-width: 120px;
+  text-align: right;
+}
+
+/* Subtotal */
+.subtotal {
+  text-align: right;
+  padding-top: 15px;
+  border-top: 1px solid #eee;
+  font-size: 1.1rem;
+  color: #555;
+}
+
+.subtotal strong {
+  color: #667eea;
+  font-weight: 700;
+}
+
+/* Seção de Total */
+.totalSection {
+  background: white;
+  border-radius: 12px;
+  padding: 30px;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15);
+  animation: slideIn 0.6s ease-out;
+}
+
+.totalContainer {
+  background: #f8f9fa;
+  padding: 25px;
+  border-radius: 8px;
+  margin-bottom: 25px;
+}
+
+.totalRow {
+  display: flex;
+  justify-content: space-between;
+  padding: 12px 0;
+  font-size: 1.05rem;
+  color: #555;
+  border-bottom: 1px solid #e0e0e0;
+}
+
+.totalRow:last-child {
+  border-bottom: none;
+}
+
+.totalRowFinal {
+  display: flex;
+  justify-content: space-between;
+  padding: 18px 0;
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  padding: 18px 20px;
+  margin: 0 -25px -25px -25px;
+  border-radius: 0 0 8px 8px;
+}
+
+/* Botão Pagar */
+.pagarButton {
+  width: 100%;
+  padding: 18px;
+  font-size: 1.2rem;
+  font-weight: 700;
+  color: white;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+  margin-top: 20px;
+}
+
+.pagarButton:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(102, 126, 234, 0.6);
+}
+
+.pagarButton:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 10px rgba(102, 126, 234, 0.4);
+}
+
+/* Responsivo */
+@media (max-width: 768px) {
+  .title {
+    font-size: 1.8rem;
+    margin-bottom: 25px;
+  }
+
+  .section {
+    padding: 20px;
+    margin-bottom: 20px;
+  }
+
+  .sectionTitle {
+    font-size: 1.2rem;
+  }
+
+  .ingressoCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 15px;
+  }
+
+  .priceIngresso {
+    width: 100%;
+    text-align: left;
+  }
+
+  .detalhes {
+    grid-template-columns: 1fr;
+  }
+
+  .lanchCard {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+
+  .priceLanche {
+    width: 100%;
+    text-align: left;
+  }
+
+  .totalRowFinal {
+    flex-direction: column;
+    gap: 10px;
+    font-size: 1.2rem;
+  }
+
+  .pagarButton {
+    font-size: 1rem;
+    padding: 15px;
+  }
+}
+
+@media (max-width: 480px) {
+  .title {
+    font-size: 1.5rem;
+  }
+
+  .sectionTitle {
+    font-size: 1rem;
+  }
+
+  .filmeName {
+    font-size: 1rem;
+  }
+
+  .detalhes {
+    gap: 5px;
+  }
+
+  .detalhe {
+    font-size: 0.85rem;
+  }
+
+  .priceIngresso,
+  .priceLanche {
+    font-size: 1rem;
+  }
+}
