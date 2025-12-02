@@ -16,7 +16,7 @@ export default function Page() {
         <div className={styles.qrSection}>
           
           <Image
-            src="/qr.png"
+            src="/Img/qr.png"
             alt="QR Code de entrada"
             width={180}
             height={180}
