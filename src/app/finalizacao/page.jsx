@@ -1,9 +1,67 @@
 "use client"
 import { useState, useEffect } from "react";
 import SiteHeader from "@/components/Header/page";
-import Button from "@/components/Button/page";
-import Link from "next/link";
 import styles from "./finalizacao.module.css";
+
+// Garante que qualquer valor recebido da API seja tratado como número válido
+const normalizarValorMonetario = (valor) => {
+  const numero = Number(valor);
+  return Number.isNaN(numero) ? 0 : numero;
+};
+
+// Busca o preço correto do ingresso considerando o vínculo com a sessão
+const obterDetalhesIngresso = async (sessao) => {
+  const descricaoPadrao = sessao?.tipo || "Ingresso";
+  if (!sessao) {
+    return { preco: 0, descricao: descricaoPadrao };
+  }
+
+  if (sessao?.ingresso?.preco !== undefined) {
+    return {
+      preco: normalizarValorMonetario(sessao.ingresso.preco),
+      descricao: sessao.ingresso.tipo || descricaoPadrao
+    };
+  }
+
+  if (sessao?.ingressoId) {
+    try {
+      const ingressoResponse = await fetch(`http://localhost:5000/ingressos/${sessao.ingressoId}`);
+      if (ingressoResponse.ok) {
+        const ingressoData = await ingressoResponse.json();
+        return {
+          preco: normalizarValorMonetario(ingressoData?.preco),
+          descricao: ingressoData?.tipo || descricaoPadrao
+        };
+      }
+    } catch (error) {
+      console.error("Erro ao buscar ingresso por ID:", error);
+    }
+  }
+
+  if (sessao?.preco !== undefined) {
+    return { preco: normalizarValorMonetario(sessao.preco), descricao: descricaoPadrao };
+  }
+
+  if (sessao?.tipo) {
+    try {
+      const ingressoResponse = await fetch(`http://localhost:5000/ingressos?tipo=${encodeURIComponent(sessao.tipo)}`);
+      if (ingressoResponse.ok) {
+        const ingressosData = await ingressoResponse.json();
+        const ingressoEncontrado = Array.isArray(ingressosData) ? ingressosData[0] : ingressosData;
+        if (ingressoEncontrado) {
+          return {
+            preco: normalizarValorMonetario(ingressoEncontrado?.preco),
+            descricao: ingressoEncontrado?.tipo || descricaoPadrao
+          };
+        }
+      }
+    } catch (error) {
+      console.error("Erro ao buscar ingresso por tipo:", error);
+    }
+  }
+
+  return { preco: 0, descricao: descricaoPadrao };
+};
 
 export default function FinalizacaoPage() {
   const [ingressos, setIngressos] = useState([]);
@@ -24,18 +82,30 @@ export default function FinalizacaoPage() {
         if (sessaoData.assentos && sessaoData.assentos.length > 0) {
           try {
             const response = await fetch(`http://localhost:5000/sessoes/${sessaoData.sessaoId}`);
+            if (!response.ok) {
+              throw new Error("Não foi possível carregar a sessão selecionada.");
+            }
             const sessao = await response.json();
+            const detalhesIngresso = await obterDetalhesIngresso(sessao);
+            const dataHoraSessao = sessao?.dataHora || sessaoData.dataHora;
+            const dataHoraObjeto = dataHoraSessao ? new Date(dataHoraSessao) : null;
+            const dataFormatada = dataHoraObjeto ? dataHoraObjeto.toLocaleDateString("pt-BR") : "--";
+            const horaFormatada = dataHoraObjeto
+              ? dataHoraObjeto.toLocaleTimeString("pt-BR", {
+                  hour: "2-digit",
+                  minute: "2-digit"
+                })
+              : "--";
             
             const ingressosFormatados = sessaoData.assentos.map((assento) => ({
               nomeFilme: sessaoData.filmeNome || "Filme",
-              data: new Date(sessaoData.dataHora).toLocaleDateString("pt-BR"),
-              hora: new Date(sessaoData.dataHora).toLocaleTimeString("pt-BR", {
-                hour: "2-digit",
-                minute: "2-digit"
-              }),
-              sala: sessaoData.salaId || "N/A",
+              data: dataFormatada,
+              hora: horaFormatada,
+              sala: sessao?.salaId ?? sessaoData.salaId ?? "N/A",
               assento: assento.posicao || assento.id,
-              preco: sessao.preco || 0
+              tipoSessao: sessao?.tipo || "",
+              tipoIngresso: detalhesIngresso.descricao,
+              preco: detalhesIngresso.preco
             }));
             
             setIngressos(ingressosFormatados);
@@ -148,6 +218,16 @@ export default function FinalizacaoPage() {
                       <p className={styles.detalhe}>
                         <strong>Assento:</strong> {ingresso.assento}
                       </p>
+                      {ingresso.tipoSessao && (
+                        <p className={styles.detalhe}>
+                          <strong>Tipo de Sessão:</strong> {ingresso.tipoSessao}
+                        </p>
+                      )}
+                      {ingresso.tipoIngresso && ingresso.tipoIngresso !== ingresso.tipoSessao && (
+                        <p className={styles.detalhe}>
+                          <strong>Ingresso:</strong> {ingresso.tipoIngresso}
+                        </p>
+                      )}
                     </div>
                   </div>
                   <div className={styles.priceIngresso}>
