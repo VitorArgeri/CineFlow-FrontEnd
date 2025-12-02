@@ -1,108 +1,124 @@
 "use client";
-import React, { useState, useEffect, use } from "react";
+import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
-import Button from "@/components/Button/page";
 import SiteHeader from "@/components/Header/page";
 import { useRouter } from "next/navigation";
 
+const defaultFormValues = {
+    nome: "",
+    classificacaoIndicativa: "",
+    duracaoMinutos: "",
+    genero: "",
+    sinopse: "",
+    imgUrl: ""
+};
+
+const createFormFromFilm = (film) => ({
+    ...defaultFormValues,
+    nome: film?.nome || "",
+    classificacaoIndicativa: film?.classificacaoIndicativa || "",
+    duracaoMinutos: film?.duracaoMinutos ?? "",
+    genero: film?.genero || "",
+    sinopse: film?.sinopse || "",
+    imgUrl: film?.imgUrl || ""
+});
+
+const buildAvailableDates = (sessions = []) => {
+    if (!sessions.length) return [];
+
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    const labels = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
+    const map = new Map();
+
+    sessions.forEach((sessao) => {
+        const date = new Date(sessao.dataHora);
+        date.setHours(0, 0, 0, 0);
+        const key = date.toISOString().split('T')[0];
+
+        if (map.has(key)) return;
+
+        const diffDays = Math.floor((date - today) / (1000 * 60 * 60 * 24));
+        const label = diffDays === 0 ? 'HOJE' : diffDays === 1 ? 'AMANHÃ' : labels[date.getDay()];
+
+        map.set(key, {
+            label,
+            data: date.toLocaleDateString('pt-BR'),
+            dataCompleta: date
+        });
+    });
+
+    return Array.from(map.values()).sort((a, b) => a.dataCompleta - b.dataCompleta);
+};
+
+const initialPageState = {
+    film: null,
+    sessions: [],
+    availableDates: [],
+    selectedDate: null
+};
+
 export default function DetalhesFilme({ params }) {
-    const unwrappedParams = use(params);
     const router = useRouter();
-    const [filme, setFilme] = useState(null);
-    const [sessoes, setSessoes] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [dataSelecionada, setDataSelecionada] = useState(null);
-    const [datasDisponiveis, setDatasDisponiveis] = useState([]);
-    const [isAuthenticated, setIsAuthenticated] = useState(false);
-    const [authToken, setAuthToken] = useState(null);
-    const [editFormData, setEditFormData] = useState(null);
-    const [editFeedback, setEditFeedback] = useState({ success: "", error: "", saving: false });
-    const [deleteLoading, setDeleteLoading] = useState(false);
+    const movieId = params?.id;
+    const [pageState, setPageState] = useState(initialPageState);
+    const [statusState, setStatusState] = useState({ loading: true, deleting: false });
+    const [authState, setAuthState] = useState({ token: null, isAuthenticated: false });
+    const [editState, setEditState] = useState({
+        form: { ...defaultFormValues },
+        success: "",
+        error: "",
+        saving: false
+    });
 
     useEffect(() => {
-        const fetchFilmeData = async () => {
-            setLoading(true);
+        if (!movieId) return;
+
+        const fetchPageData = async () => {
+            setStatusState((prev) => ({ ...prev, loading: true }));
             try {
-                // Buscar dados do filme
-                const filmeResponse = await axios.get(`http://localhost:5000/filmes/${unwrappedParams.id}`);
-                setFilme(filmeResponse.data);
-                setEditFormData({
-                    nome: filmeResponse.data?.nome || "",
-                    classificacaoIndicativa: filmeResponse.data?.classificacaoIndicativa || "",
-                    duracaoMinutos: filmeResponse.data?.duracaoMinutos ?? "",
-                    genero: filmeResponse.data?.genero || "",
-                    sinopse: filmeResponse.data?.sinopse || "",
-                    imgUrl: filmeResponse.data?.imgUrl || ""
+                const [filmeResponse, sessoesResponse] = await Promise.all([
+                    axios.get(`http://localhost:5000/filmes/${movieId}`),
+                    axios.get(`http://localhost:5000/sessoes?filmeId=${movieId}`)
+                ]);
+
+                const filmeData = filmeResponse?.data || null;
+                const sessoesData = Array.isArray(sessoesResponse?.data) ? sessoesResponse.data : [];
+
+                setPageState({
+                    film: filmeData,
+                    sessions: sessoesData,
+                    availableDates: buildAvailableDates(sessoesData),
+                    selectedDate: null
                 });
 
-                // Buscar sessões do filme
-                const sessoesResponse = await axios.get(`http://localhost:5000/sessoes?filmeId=${unwrappedParams.id}`);
-                const sessoesData = sessoesResponse.data;
-                setSessoes(sessoesData);
-
-                // Extrair datas únicas das sessões
-                const datas = extrairDatasUnicas(sessoesData);
-                setDatasDisponiveis(datas);
-
-                // Não selecionar data automaticamente
-                setDataSelecionada(null);
+                setEditState((prev) => ({
+                    ...prev,
+                    form: createFormFromFilm(filmeData)
+                }));
             } catch (error) {
-                console.error('Erro ao buscar dados:', error);
+                console.error("Erro ao buscar dados:", error);
+                setPageState({ ...initialPageState });
             } finally {
-                setLoading(false);
+                setStatusState((prev) => ({ ...prev, loading: false }));
             }
         };
 
-        fetchFilmeData();
-    }, [unwrappedParams.id]);
+        fetchPageData();
+    }, [movieId]);
 
     useEffect(() => {
         try {
             const token = localStorage.getItem("userToken");
-            setIsAuthenticated(!!token);
-            setAuthToken(token);
+            setAuthState({
+                token: token || null,
+                isAuthenticated: Boolean(token)
+            });
         } catch (_) {
-            setIsAuthenticated(false);
-            setAuthToken(null);
+            setAuthState({ token: null, isAuthenticated: false });
         }
     }, []);
-
-    // Extrair datas únicas das sessões disponíveis
-    const extrairDatasUnicas = (sessoes) => {
-        if (!sessoes || sessoes.length === 0) {
-            return [];
-        }
-
-        const hoje = new Date();
-        hoje.setHours(0, 0, 0, 0);
-
-        const datasMap = new Map();
-
-        sessoes.forEach(sessao => {
-            const data = new Date(sessao.dataHora);
-            data.setHours(0, 0, 0, 0);
-            const dataStr = data.toISOString().split('T')[0];
-
-            if (!datasMap.has(dataStr)) {
-                const diasSemana = ['DOM', 'SEG', 'TER', 'QUA', 'QUI', 'SEX', 'SÁB'];
-                const diffDias = Math.floor((data - hoje) / (1000 * 60 * 60 * 24));
-
-                let label;
-                if (diffDias === 0) label = 'HOJE';
-                else if (diffDias === 1) label = 'AMANHÃ';
-                else label = diasSemana[data.getDay()];
-
-                datasMap.set(dataStr, {
-                    label,
-                    data: data.toLocaleDateString('pt-BR'),
-                    dataCompleta: data
-                });
-            }
-        });
-
-        return Array.from(datasMap.values()).sort((a, b) => a.dataCompleta - b.dataCompleta);
-    };
 
     const classificacaoOptions = [
         { label: "Livre", value: "1" },
@@ -115,76 +131,86 @@ export default function DetalhesFilme({ params }) {
     ];
 
     const handleEditChange = (field, value) => {
-        setEditFormData((prev) => ({
-            ...(prev || {}),
-            [field]: field === "duracaoMinutos" ? value.replace(/[^0-9]/g, "") : value
+        setEditState((prev) => ({
+            ...prev,
+            form: {
+                ...prev.form,
+                [field]: field === "duracaoMinutos" ? value.replace(/[^0-9]/g, "") : value
+            }
         }));
     };
 
     const handleEditSubmit = async (event) => {
         event.preventDefault();
 
-        if (!authToken) {
-            setEditFeedback({ success: "", error: "Você precisa estar logado para editar.", saving: false });
+        if (!authState.token) {
+            setEditState((prev) => ({ ...prev, success: "", error: "Você precisa estar logado para editar.", saving: false }));
             return;
         }
 
-        setEditFeedback({ success: "", error: "", saving: true });
+        setEditState((prev) => ({ ...prev, success: "", error: "", saving: true }));
 
         const payload = {
-            ...editFormData,
-            duracaoMinutos: Number(editFormData?.duracaoMinutos) || 0
+            ...editState.form,
+            duracaoMinutos: Number(editState.form?.duracaoMinutos) || 0
         };
 
         try {
-            await axios.put(`http://localhost:5000/filmes/${unwrappedParams.id}`, payload, {
+            await axios.put(`http://localhost:5000/filmes/${movieId}`, payload, {
                 headers: {
-                    Authorization: `Bearer ${authToken}`,
+                    Authorization: `Bearer ${authState.token}`,
                     "Content-Type": "application/json"
                 }
             });
-            setFilme((prev) => ({ ...prev, ...payload }));
-            setEditFeedback({ success: "Filme atualizado com sucesso!", error: "", saving: false });
+            setPageState((prev) => ({
+                ...prev,
+                film: prev.film ? { ...prev.film, ...payload } : prev.film
+            }));
+            setEditState((prev) => ({ ...prev, success: "Filme atualizado com sucesso!", error: "", saving: false }));
         } catch (error) {
             console.error("Erro ao atualizar filme", error);
             const message = error?.response?.data?.message || "Não foi possível atualizar o filme.";
-            setEditFeedback({ success: "", error: message, saving: false });
+            setEditState((prev) => ({ ...prev, success: "", error: message, saving: false }));
         }
     };
 
     const handleDeleteFilme = async () => {
-        if (!authToken) {
-            setEditFeedback({ success: "", error: "Você precisa estar logado para deletar o filme.", saving: false });
+        if (!authState.token) {
+            setEditState((prev) => ({ ...prev, success: "", error: "Você precisa estar logado para deletar o filme.", saving: false }));
             return;
         }
 
         const confirmed = window.confirm("Deseja realmente deletar este filme? Esta ação não pode ser desfeita.");
         if (!confirmed) return;
 
-        setDeleteLoading(true);
-        setEditFeedback((prev) => ({ ...prev, success: "", error: "", saving: false }));
+        setStatusState((prev) => ({ ...prev, deleting: true }));
+        setEditState((prev) => ({ ...prev, success: "", error: "", saving: false }));
 
         try {
-            await axios.delete(`http://localhost:5000/filmes/${unwrappedParams.id}`, {
+            await axios.delete(`http://localhost:5000/filmes/${movieId}`, {
                 headers: {
-                    Authorization: `Bearer ${authToken}`
+                    Authorization: `Bearer ${authState.token}`
                 }
             });
             router.push("/Filmes");
         } catch (error) {
             console.error("Erro ao deletar filme", error);
             const message = error?.response?.data?.message || "Não foi possível deletar o filme.";
-            setEditFeedback({ success: "", error: message, saving: false });
+            setEditState((prev) => ({ ...prev, success: "", error: message, saving: false }));
         } finally {
-            setDeleteLoading(false);
+            setStatusState((prev) => ({ ...prev, deleting: false }));
         }
     };
 
-    // Filtrar sessões pela data selecionada
-    const sessoesFiltradas = dataSelecionada ? sessoes.filter(sessao => {
+    const { film, sessions, availableDates, selectedDate } = pageState;
+    const { loading, deleting } = statusState;
+    const { isAuthenticated } = authState;
+    const { form, success, error, saving } = editState;
+
+    const sessoesFiltradas = selectedDate ? sessions.filter(sessao => {
         const dataSessao = new Date(sessao.dataHora);
         dataSessao.setHours(0, 0, 0, 0);
-        const dataSelec = new Date(dataSelecionada);
+        const dataSelec = new Date(selectedDate);
         dataSelec.setHours(0, 0, 0, 0);
         return dataSessao.getTime() === dataSelec.getTime();
     }) : [];
@@ -202,7 +228,7 @@ export default function DetalhesFilme({ params }) {
         );
     }
 
-    if (!filme) {
+    if (!film) {
         return (
             <div className={styles.loadingContainer}>
                 <p className={styles.loadingText}>FILME NÃO ENCONTRADO</p>
@@ -217,13 +243,13 @@ export default function DetalhesFilme({ params }) {
             <h1 className={styles.titulo}>SELECIONE A SESSÃO</h1>
 
             {/* Seletor de datas */}
-            {datasDisponiveis.length > 0 ? (
+            {availableDates.length > 0 ? (
                 <div className={styles.datasContainer}>
-                    {datasDisponiveis.map((d, index) => (
+                    {availableDates.map((d, index) => (
                         <button
                             key={index}
-                            className={`${styles.dataBtn} ${dataSelecionada && dataSelecionada.getTime() === d.dataCompleta.getTime() ? styles.dataBtnAtiva : ''}`}
-                            onClick={() => setDataSelecionada(d.dataCompleta)}
+                            className={`${styles.dataBtn} ${selectedDate && selectedDate.getTime() === d.dataCompleta.getTime() ? styles.dataBtnAtiva : ''}`}
+                            onClick={() => setPageState((prev) => ({ ...prev, selectedDate: d.dataCompleta }))}
                         >
                             <div className={styles.dataLabel}>{d.label}</div>
                             <div className={styles.dataNumero}>{d.data}</div>
@@ -238,32 +264,31 @@ export default function DetalhesFilme({ params }) {
                 </div>
             )}
 
-            {/* Card do Filme */}
-            {datasDisponiveis.length > 0 && (
+            {availableDates.length > 0 && (
                 <div className={styles.filmeCard}>
                     <div className={styles.filmeImageContainer}>
-                        <img src={filme.imgUrl} alt={filme.nome} className={styles.filmeImage} />
+                        <img src={film.imgUrl} alt={film.nome} className={styles.filmeImage} />
                     </div>
                     <div className={styles.filmeInfo}>
-                        <h2 className={styles.filmeNome}>{filme.nome}</h2>
+                        <h2 className={styles.filmeNome}>{film.nome}</h2>
                         <p className={styles.filmeMetadata}>
                             <span className={`${styles.classificacao} ${
-                                filme.classificacaoIndicativa === '1' ? styles.classificacaoLivre :
-                                filme.classificacaoIndicativa === '6' ? styles.classificacao6 :
-                                filme.classificacaoIndicativa === '10' ? styles.classificacao10 :
-                                filme.classificacaoIndicativa === '12' ? styles.classificacao12 :
-                                filme.classificacaoIndicativa === '14' ? styles.classificacao14 :
-                                filme.classificacaoIndicativa === '16' ? styles.classificacao16 :
-                                filme.classificacaoIndicativa === '18' ? styles.classificacao18 : ''
+                                film.classificacaoIndicativa === '1' ? styles.classificacaoLivre :
+                                film.classificacaoIndicativa === '6' ? styles.classificacao6 :
+                                film.classificacaoIndicativa === '10' ? styles.classificacao10 :
+                                film.classificacaoIndicativa === '12' ? styles.classificacao12 :
+                                film.classificacaoIndicativa === '14' ? styles.classificacao14 :
+                                film.classificacaoIndicativa === '16' ? styles.classificacao16 :
+                                film.classificacaoIndicativa === '18' ? styles.classificacao18 : ''
                             }`}>
-                                {filme.classificacaoIndicativa === '1' ? 'Livre' : filme.classificacaoIndicativa}
+                                {film.classificacaoIndicativa === '1' ? 'Livre' : film.classificacaoIndicativa}
                             </span>
-                            <span>{filme.duracaoMinutos}min</span>
-                            <span>{filme.genero}</span>
+                            <span>{film.duracaoMinutos}min</span>
+                            <span>{film.genero}</span>
                         </p>
                         <div className={styles.sinopseContainer}>
-                            {filme.sinopse ? (
-                                <p className={styles.filmeSinopse}>{filme.sinopse}</p>
+                            {film.sinopse ? (
+                                <p className={styles.filmeSinopse}>{film.sinopse}</p>
                             ) : (
                                 <p className={styles.mensagemIndisponivel}>Sinopse não disponível no momento.</p>
                             )}
@@ -283,7 +308,7 @@ export default function DetalhesFilme({ params }) {
                                 <span>Nome</span>
                                 <input
                                     type="text"
-                                    value={editFormData?.nome || ''}
+                                    value={form?.nome || ''}
                                     onChange={(event) => handleEditChange('nome', event.target.value)}
                                     required
                                 />
@@ -292,7 +317,7 @@ export default function DetalhesFilme({ params }) {
                             <label className={styles.editField}>
                                 <span>Classificação</span>
                                 <select
-                                    value={editFormData?.classificacaoIndicativa || ''}
+                                    value={form?.classificacaoIndicativa || ''}
                                     onChange={(event) => handleEditChange('classificacaoIndicativa', event.target.value)}
                                     required
                                 >
@@ -308,7 +333,7 @@ export default function DetalhesFilme({ params }) {
                                 <input
                                     type="text"
                                     inputMode="numeric"
-                                    value={editFormData?.duracaoMinutos ?? ''}
+                                    value={form?.duracaoMinutos ?? ''}
                                     onChange={(event) => handleEditChange('duracaoMinutos', event.target.value)}
                                     required
                                 />
@@ -318,7 +343,7 @@ export default function DetalhesFilme({ params }) {
                                 <span>Gênero</span>
                                 <input
                                     type="text"
-                                    value={editFormData?.genero || ''}
+                                    value={form?.genero || ''}
                                     onChange={(event) => handleEditChange('genero', event.target.value)}
                                     required
                                 />
@@ -329,7 +354,7 @@ export default function DetalhesFilme({ params }) {
                             <span>Sinopse</span>
                             <textarea
                                 rows={4}
-                                value={editFormData?.sinopse || ''}
+                                value={form?.sinopse || ''}
                                 onChange={(event) => handleEditChange('sinopse', event.target.value)}
                                 placeholder="Descreva a trama em poucas linhas"
                             />
@@ -339,7 +364,7 @@ export default function DetalhesFilme({ params }) {
                             <span>Imagem (URL)</span>
                             <input
                                 type="url"
-                                value={editFormData?.imgUrl || ''}
+                                value={form?.imgUrl || ''}
                                 onChange={(event) => handleEditChange('imgUrl', event.target.value)}
                                 placeholder="https://exemplo.com/cartaz.jpg"
                             />
@@ -347,21 +372,21 @@ export default function DetalhesFilme({ params }) {
 
                         <div className={styles.editActions}>
                             <div className={styles.actionGroup}>
-                                <button type="submit" className={`${styles.actionButton} ${styles.saveButton}`} disabled={editFeedback.saving}>
-                                    {editFeedback.saving ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
+                                <button type="submit" className={`${styles.actionButton} ${styles.saveButton}`} disabled={saving}>
+                                    {saving ? 'SALVANDO...' : 'SALVAR ALTERAÇÕES'}
                                 </button>
                                 <div className={styles.feedbackWrapper}>
-                                    {editFeedback.success && <span className={styles.feedbackSuccess}>{editFeedback.success}</span>}
-                                    {editFeedback.error && <span className={styles.feedbackError}>{editFeedback.error}</span>}
+                                    {success && <span className={styles.feedbackSuccess}>{success}</span>}
+                                    {error && <span className={styles.feedbackError}>{error}</span>}
                                 </div>
                             </div>
                             <button
                                 type="button"
                                 className={`${styles.actionButton} ${styles.deleteButton}`}
                                 onClick={handleDeleteFilme}
-                                disabled={deleteLoading}
+                                disabled={deleting}
                             >
-                                {deleteLoading ? 'DELETANDO...' : 'DELETAR'}
+                                {deleting ? 'DELETANDO...' : 'DELETAR'}
                             </button>
                         </div>
                     </form>
@@ -369,9 +394,9 @@ export default function DetalhesFilme({ params }) {
             )}
 
             {/* Sessões disponíveis */}
-            {datasDisponiveis.length > 0 && (
+            {availableDates.length > 0 && (
                 <>
-                    {!dataSelecionada ? (
+                    {!selectedDate ? (
                         <div className={styles.mensagemContainer}>
                             <p className={styles.mensagemIndisponivel}>
                                 Por favor, selecione uma data para visualizar as sessões disponíveis.

@@ -18,13 +18,14 @@ export default function LoginPage() {
       setError("Por favor preencha email e senha.");
       return false;
     }
-    // simples validação de email
-    const re =
-      /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
-    if (!re.test(email)) {
+
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+    if (!emailRegex.test(email)) {
       setError("Formato de email inválido.");
       return false;
     }
+
     setError("");
     return true;
   }
@@ -66,7 +67,7 @@ export default function LoginPage() {
             localStorage.setItem("userName", resolvedName);
             sessionStorage.setItem("userName", resolvedName);
           }
-        } catch (_) {}
+        } catch (_) { }
         router.push("/Filmes");
       } else {
         setError("Resposta inesperada do servidor.");
@@ -87,20 +88,20 @@ export default function LoginPage() {
       </div>
 
       <form className={styles.card} onSubmit={handleSubmit} noValidate>
-                <div className={styles.logo}>
-                    <span className={styles.cine}>Cine</span>
-                    <div className={styles.glasses}>
-                        <div className={styles.lensLeft}></div>
-                        <div className={styles.lensRight}></div>
-                    </div>
-        <span className={styles.flow}>Flow</span>
-      </div>
+        <div className={styles.logo}>
+          <span className={styles.cine}>Cine</span>
+          <div className={styles.glasses}>
+            <div className={styles.lensLeft}></div>
+            <div className={styles.lensRight}></div>
+          </div>
+          <span className={styles.flow}>Flow</span>
+        </div>
         <h1 className={styles.title}>Login de Usuário</h1>
 
         {error && <div className={styles.error}>{error}</div>}
 
         <label className={styles.label} htmlFor="email">
-          Email:    
+          Email:
         </label>
         <input
           id="email"

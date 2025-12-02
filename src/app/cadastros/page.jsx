@@ -16,49 +16,44 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
 
     function validate() {
-        if (!name || !email || !password || !code) {
-            setError("Por favor preencha nome, email, senha e código.");
+        if (!email || !password || !name || !code) {
+            setError("Por favor preencha email, senha, nome e código.");
             return false;
         }
-        // simples validação de email
-        const re =
-            /^(([^<>()[\]\\.,;:\s@\"]+(\.[^<>()[\]\\.,;:\s@\"]+)*)|(".+"))@(([^<>()[\]\\.,;:\s@\"]+\.)+[^<>()[\]\\.,;:\s@\"]{2,})$/i;
-        if (!re.test(email)) {
+
+        const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+        if (!emailRegex.test(email)) {
             setError("Formato de email inválido.");
             return false;
         }
+
         setError("");
         return true;
     }
 
     async function handleSubmit(e) {
         e.preventDefault();
+
         if (!validate()) return;
+
         setLoading(true);
         setError("");
+
         try {
-            // Cadastro de usuário no backend
-            const res = await fetch("http://localhost:5000/auth/register", {
+            const response = await fetch("http://localhost:5000/auth/register", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ name, email, password, code }),
             });
 
-            if (!res.ok) {
-                let msg = "Falha ao cadastrar.";
-                try {
-                    const err = await res.json();
-                    msg = err.message || msg;
-                } catch (_) {
-                    const text = await res.text();
-                    if (text) msg = text;
-                }
-                setError(msg);
+            if (!response.ok) {
+                const data = await response.json().catch(() => null);
+                setError(data?.message || "Falha ao cadastrar.");
                 setLoading(false);
                 return;
             }
 
-            // Cadastro efetuado com sucesso: redireciona para login
             router.push("/login");
         } catch (err) {
             setError("Erro de conexão. Tente novamente.");

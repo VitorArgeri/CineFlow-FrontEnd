@@ -1,158 +1,157 @@
 "use client";
-import React, { useEffect, useState, use } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
 import Button from "@/components/Button/page";
 import SiteHeader from "@/components/Header/page";
 import { useRouter } from "next/navigation";
 
-const ordenarAssentos = (lista = []) => {
-    const pesoLinha = (linha = "") => {
-        if (!linha) return 0;
-        return linha
-            .toUpperCase()
-            .split("")
-            .reduce((acc, char) => acc * 26 + (char.charCodeAt(0) - 64), 0);
+const parseSeat = (posicao = "") => {
+    const match = posicao.match(/^([A-Za-z]+)(\d+)$/);
+    return {
+        row: (match?.[1] || "").toUpperCase(),
+        number: Number(match?.[2]) || 0
     };
-
-    const quebrarPosicao = (posicao = "") => {
-        const match = posicao.match(/^([A-Za-z]+)(\d+)$/);
-        if (!match) return [posicao || "", 0];
-        return [match[1], Number(match[2])];
-    };
-
-    return [...lista].sort((a, b) => {
-        const [linhaA, numeroA] = quebrarPosicao(a.posicao || "");
-        const [linhaB, numeroB] = quebrarPosicao(b.posicao || "");
-
-        const diffLinha = pesoLinha(linhaA) - pesoLinha(linhaB);
-        if (diffLinha !== 0) return diffLinha;
-        return numeroA - numeroB;
-    });
 };
 
-const deduplicarAssentosPorSala = (lista = []) => {
-    const vistos = new Set();
-    return lista.filter((assento) => {
-        const salaKey = Number(assento?.salaId) || 0;
-        const chaveBase = assento?.posicao ? assento.posicao.trim().toUpperCase() : `ID-${assento?.id}`;
-        const chave = `${salaKey}-${chaveBase}`;
-        if (vistos.has(chave)) return false;
-        vistos.add(chave);
-        return true;
-    });
+const sortSeats = (a, b) => {
+    const seatA = parseSeat(a.posicao || "");
+    const seatB = parseSeat(b.posicao || "");
+    const rowDiff = seatA.row.localeCompare(seatB.row);
+    if (rowDiff !== 0) return rowDiff;
+    return seatA.number - seatB.number;
 };
 
-const obterLabelDataSessao = (dataHora) => {
+const buildSeats = (assentos = [], registros = [], salaId) => {
+    const listaRegistros = Array.isArray(registros) ? registros : [];
+    const idsOcupados = new Set(listaRegistros.map((reg) => reg.assentoId));
+    const posicoesVistas = new Set();
+
+    return (assentos || [])
+        .filter((assento) => {
+            const ehDaSala = Number(assento?.salaId) === Number(salaId);
+            
+            if (!ehDaSala) return false;
+
+            const chave = (assento.posicao || assento.id || "").toString().toUpperCase();
+            
+            if (posicoesVistas.has(chave)) return false;
+
+            posicoesVistas.add(chave);
+            return true;
+        })
+        .map((assento) => {
+            const estaNoRegistro = idsOcupados.has(assento.id);
+            const statusOcupado = assento.status?.toLowerCase() === "ocupado";
+
+            return {
+                ...assento,
+                ocupado: estaNoRegistro || statusOcupado
+            };
+        })
+        .sort(sortSeats);
+};
+
+const getSessionDateLabel = (dataHora) => {
     if (!dataHora) return "";
-    const data = new Date(dataHora);
-    const hoje = new Date();
-    hoje.setHours(0, 0, 0, 0);
-    const dataComparar = new Date(data);
-    dataComparar.setHours(0, 0, 0, 0);
 
-    const diffDias = Math.floor((dataComparar - hoje) / (1000 * 60 * 60 * 24));
+    const dataEvento = new Date(dataHora);
+    const dataHoje = new Date();
+
+    dataEvento.setHours(0, 0, 0, 0);
+    dataHoje.setHours(0, 0, 0, 0);
+
+    const diffMs = dataEvento - dataHoje;
+    const diffDias = Math.round(diffMs / 86400000);
+
     if (diffDias === 0) return "HOJE";
     if (diffDias === 1) return "AMANHÃ";
-    return data.toLocaleDateString("pt-BR", {
+
+    return new Date(dataHora).toLocaleDateString("pt-BR", {
         weekday: "short",
         day: "2-digit",
         month: "2-digit"
     }).toUpperCase();
 };
 
+const formatHour = (dataIso) => {
+    if (!dataIso) return "";
+
+    return new Date(dataIso).toLocaleTimeString("pt-BR", {
+        hour: "2-digit",
+        minute: "2-digit"
+    });
+};
+
+const initialPageState = {
+    session: null,
+    film: null,
+    seats: [],
+    loading: true,
+    error: ""
+};
+
 export default function AssentosSessao({ params }) {
-    const { sessaoId } = use(params);
     const router = useRouter();
-    const [sessao, setSessao] = useState(null);
-    const [filme, setFilme] = useState(null);
-    const [assentos, setAssentos] = useState([]);
+    const sessaoId = params?.sessaoId;
+
+    const [pageState, setPageState] = useState(initialPageState);
     const [selectedSeats, setSelectedSeats] = useState([]);
-    const [loading, setLoading] = useState(true);
-    const [erro, setErro] = useState("");
 
     useEffect(() => {
+        if (!sessaoId) return;
+
         const carregarDados = async () => {
-            setLoading(true);
-            setErro("");
+            setPageState((prev) => ({ ...prev, loading: true, error: "" }));
             try {
                 const sessaoResponse = await axios.get(`http://localhost:5000/sessoes/${sessaoId}`);
                 const sessaoData = sessaoResponse.data;
-                setSessao(sessaoData);
 
                 const [filmeResponse, assentosResponse, registrosResponse] = await Promise.all([
                     axios.get(`http://localhost:5000/filmes/${sessaoData.filmeId}`),
                     axios.get(`http://localhost:5000/assentos?salaId=${sessaoData.salaId}`),
-                    axios
-                        .get(`http://localhost:5000/registroSessoes?sessaoId=${sessaoId}`)
-                        .catch(() => ({ data: [] }))
+                    axios.get(`http://localhost:5000/registroSessoes?sessaoId=${sessaoId}`).catch(() => ({ data: [] }))
                 ]);
 
-                setFilme(filmeResponse.data);
-                const ocupados = new Set((registrosResponse.data || []).map((registro) => registro.assentoId));
-
-                const salaIdNumero = Number(sessaoData.salaId);
-                const assentosSala = (assentosResponse.data || []).filter((assento) => {
-                    const salaAssento = Number(assento.salaId);
-                    return salaAssento === salaIdNumero;
+                setPageState({
+                    session: sessaoData,
+                    film: filmeResponse.data,
+                    seats: buildSeats(assentosResponse.data || [], registrosResponse.data || [], sessaoData.salaId),
+                    loading: false,
+                    error: ""
                 });
-
-                const assentosProcessados = deduplicarAssentosPorSala(assentosSala).map((assento) => ({
-                    ...assento,
-                    ocupado: ocupados.has(assento.id) || (assento.status || "").toLowerCase() === "ocupado"
-                }));
-
-                setAssentos(ordenarAssentos(assentosProcessados));
+                setSelectedSeats([]);
             } catch (error) {
                 console.error("Erro ao carregar dados da sessão", error);
-                setErro("Não conseguimos carregar os assentos desta sessão. Tente novamente mais tarde.");
-            } finally {
-                setLoading(false);
+                setPageState({ ...initialPageState, loading: false, error: "Não conseguimos carregar os assentos desta sessão. Tente novamente mais tarde." });
             }
         };
 
-        if (sessaoId) {
-            carregarDados();
-        }
+        carregarDados();
     }, [sessaoId]);
 
     const toggleSeat = (assento) => {
         if (assento.ocupado) return;
         setSelectedSeats((prev) => (
-            prev.includes(assento.id)
-                ? prev.filter((id) => id !== assento.id)
-                : [...prev, assento.id]
+            prev.includes(assento.id) ? prev.filter((id) => id !== assento.id) : [...prev, assento.id]
         ));
     };
 
-    const formatarHora = (dataIso) => {
-        if (!dataIso) return "";
-        return new Date(dataIso).toLocaleTimeString("pt-BR", {
-            hour: "2-digit",
-            minute: "2-digit"
-        });
-    };
+    const { session, film, seats, loading, error } = pageState;
+    const detalheFilmeHref = film ? `/${film.id}` : "/Filmes";
+    const assentosSelecionados = seats.filter((assento) => selectedSeats.includes(assento.id));
 
-    const detalheFilmeHref = filme ? `/${filme.id}` : "/Filmes";
-    const assentosSelecionados = assentos.filter((assento) => selectedSeats.includes(assento.id));
-
-    const getSeatLabel = (assentoId, ocupado) => {
-        const selecionado = selectedSeats.includes(assentoId);
-        if (ocupado || selecionado) {
-            return "X";
-        }
-        return "";
-    };
+    const getSeatLabel = (assento) => (assento.ocupado || selectedSeats.includes(assento.id) ? "X" : "");
 
     const handleContinue = () => {
         if (assentosSelecionados.length === 0) return;
 
         const payload = {
             sessaoId,
-            filmeId: filme?.id,
-            filmeNome: filme?.nome,
-            salaId: sessao?.salaId,
-            dataHora: sessao?.dataHora,
+            filmeId: film?.id,
+            filmeNome: film?.nome,
+            salaId: session?.salaId,
+            dataHora: session?.dataHora,
             quantidade: assentosSelecionados.length,
             assentos: assentosSelecionados.map((seat) => ({
                 id: seat.id,
@@ -178,10 +177,10 @@ export default function AssentosSessao({ params }) {
         );
     }
 
-    if (erro || !sessao) {
+    if (error || !session) {
         return (
             <div className={styles.loadingContainer}>
-                <p className={styles.loadingText}>{erro || "Sessão não encontrada."}</p>
+                <p className={styles.loadingText}>{error || "Sessão não encontrada."}</p>
                 <Button href="/Filmes">VOLTAR</Button>
             </div>
         );
@@ -196,18 +195,18 @@ export default function AssentosSessao({ params }) {
 
             <section className={styles.sessionInfo}>
                                 <p className={styles.sessionSummary}>
-                    <span className={styles.sessionSummaryLabel}>FILME:</span> {filme?.nome || "Sessão"} <span className={styles.sessionSummaryDivider}>|</span>
-                    <span className={styles.sessionSummaryLabel}>DATA:</span> {obterLabelDataSessao(sessao.dataHora)} <span className={styles.sessionSummaryDivider}>|</span>
-                    <span className={styles.sessionSummaryLabel}>SESSÃO:</span> {formatarHora(sessao.dataHora)}h <span className={styles.sessionSummaryDivider}>|</span>
-                    <span className={styles.sessionSummaryLabel}>SALA:</span> {sessao.salaId} <span className={styles.sessionSummaryDivider}>|</span>
-                    <span className={styles.sessionSummaryLabel}>TIPO:</span> {sessao.tipo} {sessao.dublagem && `- ${sessao.dublagem}`}
+                    <span className={styles.sessionSummaryLabel}>FILME:</span> {film?.nome || "Sessão"} <span className={styles.sessionSummaryDivider}>|</span>
+                    <span className={styles.sessionSummaryLabel}>DATA:</span> {getSessionDateLabel(session.dataHora)} <span className={styles.sessionSummaryDivider}>|</span>
+                    <span className={styles.sessionSummaryLabel}>SESSÃO:</span> {formatHour(session.dataHora)}h <span className={styles.sessionSummaryDivider}>|</span>
+                    <span className={styles.sessionSummaryLabel}>SALA:</span> {session.salaId} <span className={styles.sessionSummaryDivider}>|</span>
+                    <span className={styles.sessionSummaryLabel}>TIPO:</span> {session.tipo} {session.dublagem && `- ${session.dublagem}`}
                 </p>
             </section>
 
             <section className={styles.chooser}>
                 <div className={styles.screen}>TELA</div>
                 <div className={styles.seatsGrid}>
-                    {assentos.map((assento) => (
+                    {seats.map((assento) => (
                         <button
                             key={assento.id}
                             type="button"
@@ -217,7 +216,7 @@ export default function AssentosSessao({ params }) {
                             disabled={assento.ocupado}
                             aria-label={`Assento ${assento.posicao || assento.id}`}
                         >
-                            <span className={styles.seatLabel}>{getSeatLabel(assento.id, assento.ocupado)}</span>
+                            <span className={styles.seatLabel}>{getSeatLabel(assento)}</span>
                         </button>
                     ))}
                 </div>

@@ -1,92 +1,41 @@
-"use client";
-import Button from "@/components/Button/page";
-import ProfileLink from "@/components/ProfileLink/page";
-import styles from "./SiteHeader.module.css";
-import { useState, useEffect, useCallback } from "react";
+"use client"
+import { useState, useEffect } from 'react'
+import Button from './Button'
+import ProfileLink from './ProfileLink'
+import styles from './SiteHeader.module.css'
 
-export default function SiteHeader({
-    backHref = "/",
-    backLabel = "VOLTAR",
-    onBack,
-    rightSlot,
-    showProfile = true,
+export default function SiteHeader({ 
+    backHref = "/", 
+    backLabel = "VOLTAR", 
+    onBack, 
+    rightSlot, 
+    showProfile = true, 
     className = "",
-    buttonProps = {}
+    ...props 
 }) {
-    const wrapperClass = [styles.header, className].filter(Boolean).join(" ");
-
     const [isLogged, setIsLogged] = useState(false);
-    const readToken = useCallback(() => {
-        try {
-            const token = localStorage.getItem("userToken");
-            setIsLogged(!!token);
-        } catch (_) {}
-    }, []);
 
     useEffect(() => {
-        readToken();
-        const onStorage = (e) => {
-            if (!e || e.key !== "userToken") return;
-            readToken();
-        };
-        window.addEventListener("storage", onStorage);
-        return () => window.removeEventListener("storage", onStorage);
-    }, [readToken]);
-
-    const handleLogout = useCallback(() => {
-        try {
-            localStorage.removeItem("userToken");
-            localStorage.removeItem("userId");
-            localStorage.removeItem("userName");
-            sessionStorage.removeItem("userName");
-        } catch (_) {}
-        // redireciona para login
-        window.location.href = "/login";
+        setIsLogged(!!localStorage.getItem("userToken"));
     }, []);
 
-    const handleBackClick = (event) => {
-        if (onBack) {
-            event.preventDefault();
-            onBack();
-        }
-    };
-
-    const renderBackButton = () => {
-        if (onBack) {
-            return (
-                <Button onClick={handleBackClick} {...buttonProps}>
-                    {backLabel}
-                </Button>
-            );
-        }
-
-        return (
-            <Button href={backHref} {...buttonProps}>
-                {backLabel}
-            </Button>
-        );
-    };
-
-    const renderRightSlot = () => {
-        if (rightSlot) return rightSlot;
-        if (!showProfile) return null;
-        return (
-            <div className={styles.userArea}>
-                <ProfileLink />
-                {isLogged && (
-                    <Button onClick={handleLogout} className={styles.logoutBtn}>
-                        LOGOUT
-                    </Button>
-                )}
-            </div>
-        );
+    const handleLogout = () => {
+        localStorage.clear();
+        window.location.href = "/login";
     };
 
     return (
-        <header className={wrapperClass}>
+        <header className={`${styles.header} ${className}`}>
             <div className={`${styles.side} ${styles.leftSide}`}>
-                {renderBackButton()}
+                <Button 
+                    href={onBack ? undefined : backHref} 
+                    onClick={onBack}
+                    {...props}
+                >
+                    {backLabel}
+                </Button>
             </div>
+
             <div className={styles.logo}>
                 <span className={styles.cine}>Cine</span>
                 <div className={styles.glasses}>
@@ -95,8 +44,20 @@ export default function SiteHeader({
                 </div>
                 <span className={styles.flow}>Flow</span>
             </div>
+
             <div className={`${styles.side} ${styles.rightSide}`}>
-                {renderRightSlot()}
+                {rightSlot ? rightSlot : (
+                    showProfile && (
+                        <div className={styles.userArea}>
+                            <ProfileLink />
+                            {isLogged && (
+                                <Button onClick={handleLogout} className={styles.logoutBtn}>
+                                    LOGOUT
+                                </Button>
+                            )}
+                        </div>
+                    )
+                )}
             </div>
         </header>
     );
