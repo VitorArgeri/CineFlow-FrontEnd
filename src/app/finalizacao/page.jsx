@@ -1,150 +1,171 @@
-"use client"
+"use client";
 import React, { useState, useEffect } from "react";
 import SiteHeader from "@/components/Header/page";
 import styles from "./finalizacao.module.css";
 
 const resolveTicketInfo = async (sessao) => {
-    if (!sessao) return { preco: 0, tipo: "Padrão" };
+  if (!sessao) return { preco: 0, tipo: "Padrão" };
 
-    if (sessao.ingresso?.preco !== undefined) {
-        return { preco: Number(sessao.ingresso.preco), tipo: sessao.ingresso.tipo || sessao.tipo };
+  if (sessao.ingresso?.preco !== undefined) {
+    return {
+      preco: Number(sessao.ingresso.preco),
+      tipo: sessao.ingresso.tipo || sessao.tipo,
+    };
+  }
+  if (sessao.preco !== undefined) {
+    return { preco: Number(sessao.preco), tipo: sessao.tipo };
+  }
+
+  try {
+    let url = "";
+    if (sessao.ingressoId)
+      url = `http://localhost:5000/ingressos/${sessao.ingressoId}`;
+    else if (sessao.tipo)
+      url = `http://localhost:5000/ingressos?tipo=${encodeURIComponent(
+        sessao.tipo
+      )}`;
+
+    if (url) {
+      const res = await fetch(url);
+      if (res.ok) {
+        const data = await res.json();
+        const item = Array.isArray(data) ? data[0] : data;
+        return {
+          preco: Number(item?.preco || 0),
+          tipo: item?.tipo || sessao.tipo,
+        };
+      }
     }
-    if (sessao.preco !== undefined) {
-        return { preco: Number(sessao.preco), tipo: sessao.tipo };
-    }
+  } catch (err) {
+    console.error("Erro ao buscar preço:", err);
+  }
 
-    try {
-        let url = "";
-        if (sessao.ingressoId) url = `http://localhost:5000/ingressos/${sessao.ingressoId}`;
-        else if (sessao.tipo) url = `http://localhost:5000/ingressos?tipo=${encodeURIComponent(sessao.tipo)}`;
-
-        if (url) {
-            const res = await fetch(url);
-            if (res.ok) {
-                const data = await res.json();
-                const item = Array.isArray(data) ? data[0] : data;
-                return { preco: Number(item?.preco || 0), tipo: item?.tipo || sessao.tipo };
-            }
-        }
-    } catch (err) {
-        console.error("Erro ao buscar preço:", err);
-    }
-
-    return { preco: 0, tipo: "Padrão" };
+  return { preco: 0, tipo: "Padrão" };
 };
 
 export default function FinalizacaoPage() {
-    const [resumo, setResumo] = useState({ ingressos: [], lanches: [], total: 0 });
-    const [loading, setLoading] = useState(true);
-    const taxaServico = 5;
+  const [resumo, setResumo] = useState({
+    ingressos: [],
+    lanches: [],
+    total: 0,
+  });
+  const [loading, setLoading] = useState(true);
+  const taxaServico = 5;
 
-    useEffect(() => {
-        const loadData = async () => {
-            const sessaoStorage = JSON.parse(sessionStorage.getItem("cineflow-assentos-selecionados")) || {};
-            const carrinhoStorage = JSON.parse(sessionStorage.getItem("cineflow-carrinho")) || {};
-            
-            const [sessaoRes, alimentosRes] = await Promise.all([
-                sessaoStorage.sessaoId ? fetch(`http://localhost:5000/sessoes/${sessaoStorage.sessaoId}`) : null,
-                fetch("http://localhost:5000/alimentos")
-            ]);
-            
-            const sessao = sessaoRes?.ok ? await sessaoRes.json() : null;
-            const alimentos = alimentosRes?.ok ? await alimentosRes.json() : [];
+  useEffect(() => {
+    const loadData = async () => {
+      const sessaoStorage =
+        JSON.parse(sessionStorage.getItem("cineflow-assentos-selecionados")) ||
+        {};
+      const carrinhoStorage =
+        JSON.parse(sessionStorage.getItem("cineflow-carrinho")) || {};
 
-            const ticketInfo = await resolveTicketInfo(sessao);
-            const dataObj = new Date(sessao?.dataHora || sessaoStorage.dataHora || Date.now());
-            
-            const listaIngressos = (sessaoStorage.assentos || []).map(assento => ({
-                filme: sessaoStorage.filmeNome || "Filme",
-                data: dataObj.toLocaleDateString("pt-BR"),
-                hora: dataObj.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
-                sala: sessao?.salaId || sessaoStorage.salaId || "N/A",
-                assento: assento.posicao || assento.id,
-                tipo: ticketInfo.tipo,
-                preco: ticketInfo.preco
-            }));
+      const [sessaoRes, alimentosRes] = await Promise.all([
+        sessaoStorage.sessaoId
+          ? fetch(`http://localhost:5000/sessoes/${sessaoStorage.sessaoId}`)
+          : null,
+        fetch("http://localhost:5000/alimentos"),
+      ]);
 
-            const listaLanches = Object.entries(carrinhoStorage).map(([id, qtd]) => {
-                const item = alimentos.find(a => a.id === Number(id));
-                if (!item || qtd <= 0) return null;
-                return { ...item, quantidade: qtd, subtotal: item.preco * qtd };
-            }).filter(Boolean);
+      const sessao = sessaoRes?.ok ? await sessaoRes.json() : null;
+      const alimentos = alimentosRes?.ok ? await alimentosRes.json() : [];
 
-            const totalIngressos = listaIngressos.reduce((acc, i) => acc + i.preco, 0);
-            const totalLanches = listaLanches.reduce((acc, i) => acc + i.subtotal, 0);
+      const ticketInfo = await resolveTicketInfo(sessao);
+      const dataObj = new Date(
+        sessao?.dataHora || sessaoStorage.dataHora || Date.now()
+      );
 
-            setResumo({
-                ingressos: listaIngressos,
-                lanches: listaLanches,
-                subIngressos: totalIngressos,
-                subLanches: totalLanches,
-                totalGeral: totalIngressos + totalLanches + taxaServico,
-                backLink: sessaoStorage.sessaoId ? `/sessoes/${sessaoStorage.sessaoId}` : "/Filmes"
-            });
-            setLoading(false);
-        };
+      const listaIngressos = (sessaoStorage.assentos || []).map((assento) => ({
+        filme: sessaoStorage.filmeNome || "Filme",
+        data: dataObj.toLocaleDateString("pt-BR"),
+        hora: dataObj.toLocaleTimeString("pt-BR", {
+          hour: "2-digit",
+          minute: "2-digit",
+        }),
+        sala: sessao?.salaId || sessaoStorage.salaId || "N/A",
+        assento: assento.posicao || assento.id,
+        tipo: ticketInfo.tipo,
+        preco: ticketInfo.preco,
+      }));
 
-        loadData();
-    }, []);
+      const listaLanches = Object.entries(carrinhoStorage)
+        .map(([id, qtd]) => {
+          const item = alimentos.find((a) => a.id === Number(id));
+          if (!item || qtd <= 0) return null;
+          return { ...item, quantidade: qtd, subtotal: item.preco * qtd };
+        })
+        .filter(Boolean);
 
-    if (loading) {
-        return (
-            <div className={styles.container}>
-                <SiteHeader backHref="/Filmes" backLabel="VOLTAR" />
-                <div className={styles.content}>
-                    <p style={{ textAlign: "center", color: "white", marginTop: 50 }}>Carregando pedido...</p>
-                </div>
-            </div>
-        );
-    }
+      const totalIngressos = listaIngressos.reduce(
+        (acc, i) => acc + i.preco,
+        0
+      );
+      const totalLanches = listaLanches.reduce((acc, i) => acc + i.subtotal, 0);
 
+      setResumo({
+        ingressos: listaIngressos,
+        lanches: listaLanches,
+        subIngressos: totalIngressos,
+        subLanches: totalLanches,
+        totalGeral: totalIngressos + totalLanches + taxaServico,
+        backLink: sessaoStorage.sessaoId
+          ? `/sessoes/${sessaoStorage.sessaoId}`
+          : "/Filmes",
+      });
+      setLoading(false);
+    };
+
+    loadData();
+  }, []);
+
+  if (loading) {
+    return (
+      <div className={styles.container}>
+        <SiteHeader backHref="/Filmes" backLabel="VOLTAR" />
+        <div className={styles.content}>
+          <p style={{ textAlign: "center", color: "white", marginTop: 50 }}>
+            Carregando pedido...
+          </p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className={styles.container}>
-      <SiteHeader 
-        backHref={sessaoInfo?.sessaoId ? `/sessoes/${sessaoInfo.sessaoId}` : "/Filmes"} 
-        backLabel="VOLTAR" 
-      />
+      <SiteHeader backHref={resumo.backLink} backLabel="VOLTAR" />
 
       <div className={styles.content}>
         <h1 className={styles.title}>RESUMO DO PEDIDO</h1>
 
-        {/* Container de Ingressos */}
         <section className={styles.section}>
           <h2 className={styles.sectionTitle}>🎬 INGRESSOS</h2>
           <div className={styles.ingressosContainer}>
-            {ingressos.length > 0 ? (
-              ingressos.map((ingresso, index) => (
-                <div key={index} className={styles.ingressoCard}>
+            {resumo.ingressos.length > 0 ? (
+              resumo.ingressos.map((item, i) => (
+                <div key={i} className={styles.ingressoCard}>
                   <div className={styles.ingressoInfo}>
-                    <h3 className={styles.filmeName}>{ingresso.nomeFilme}</h3>
+                    <h3 className={styles.filmeName}>{item.filme}</h3>
                     <div className={styles.detalhes}>
-                      <p className={styles.detalhe}>
-                        <strong>Data:</strong> {ingresso.data}
+                      <p>
+                        <strong>Data:</strong> {item.data}
                       </p>
-                      <p className={styles.detalhe}>
-                        <strong>Hora:</strong> {ingresso.hora}
+                      <p>
+                        <strong>Hora:</strong> {item.hora}
                       </p>
-                      <p className={styles.detalhe}>
-                        <strong>Sala:</strong> {ingresso.sala}
+                      <p>
+                        <strong>Sala:</strong> {item.sala}
                       </p>
-                      <p className={styles.detalhe}>
-                        <strong>Assento:</strong> {ingresso.assento}
+                      <p>
+                        <strong>Assento:</strong> {item.assento}
                       </p>
-                      {ingresso.tipoSessao && (
-                        <p className={styles.detalhe}>
-                          <strong>Tipo de Sessão:</strong> {ingresso.tipoSessao}
-                        </p>
-                      )}
-                      {ingresso.tipoIngresso && ingresso.tipoIngresso !== ingresso.tipoSessao && (
-                        <p className={styles.detalhe}>
-                          <strong>Ingresso:</strong> {ingresso.tipoIngresso}
-                        </p>
-                      )}
+                      <p>
+                        <strong>Tipo:</strong> {item.tipo}
+                      </p>
                     </div>
                   </div>
                   <div className={styles.priceIngresso}>
-                    R$ {ingresso.preco?.toFixed(2)}
+                    R$ {item.preco.toFixed(2)}
                   </div>
                 </div>
               ))
@@ -152,39 +173,32 @@ export default function FinalizacaoPage() {
               <p className={styles.emptyMessage}>Nenhum ingresso selecionado</p>
             )}
           </div>
-          {ingressos.length > 0 && (
+          {resumo.ingressos.length > 0 && (
             <div className={styles.subtotal}>
-              Subtotal Ingressos: <strong>R$ {totalIngressos.toFixed(2)}</strong>
+              Subtotal: <strong>R$ {resumo.subIngressos.toFixed(2)}</strong>
             </div>
           )}
         </section>
 
-        {/* Container de Lanches */}
-        <section className={styles.section}>
-          <h2 className={styles.sectionTitle}>🍿 LANCHES</h2>
-          <div className={styles.lanchesContainer}>
-            {lanches.length > 0 ? (
-              lanches.map((lanche, index) => (
-                <div key={index} className={styles.lanchCard}>
-                  <div className={styles.lanchInfo}>
-                    <h3 className={styles.lancheName}>{lanche.nome}</h3>
-                    <p className={styles.quantidade}>Quantidade: {lanche.quantidade}</p>
-                  </div>
-                  <div className={styles.priceLanche}>
-                    R$ {(lanche.preco * lanche.quantidade).toFixed(2)}
-                  </div>
-                </div>
-              ))
-            ) : (
-              <p className={styles.emptyMessage}>Nenhum lanche selecionado</p>
-            )}
-          </div>
-          {lanches.length > 0 && (
-            <div className={styles.subtotal}>
-              Subtotal Lanches: <strong>R$ {totalLanches.toFixed(2)}</strong>
-            </div>
-          )}
-        </section>
+                      <section className={styles.section}>
+                    <h2 className={styles.sectionTitle}>🍿 LANCHES</h2>
+                    <div className={styles.lanchesContainer}>
+                        {resumo.lanches.length > 0 ? (
+                            resumo.lanches.map((item, i) => (
+                                <div key={i} className={styles.lanchCard}>
+                                    <div className={styles.lanchInfo}>
+                                        <h3 className={styles.lancheName}>{item.nome}</h3>
+                                        <p className={styles.quantidade}>Qtd: {item.quantidade}</p>
+                                    </div>
+                                    <div className={styles.priceLanche}>R$ {item.subtotal.toFixed(2)}</div>
+                                </div>
+                            ))
+                        ) : <p className={styles.emptyMessage}>Nenhum lanche selecionado</p>}
+                    </div>
+                    {resumo.lanches.length > 0 && (
+                        <div className={styles.subtotal}>Subtotal: <strong>R$ {resumo.subLanches.toFixed(2)}</strong></div>
+                    )}
+                </section>
 
         {/* Container de Total */}
         <section className={styles.totalSection}>
@@ -195,7 +209,7 @@ export default function FinalizacaoPage() {
               <span>R$ {totalIngressos.toFixed(2)}</span>
             </div>
             <div className={styles.totalRow}>
-              <span>Lanches:</span> 
+              <span>Lanches:</span>
               <span>R$ {totalLanches.toFixed(2)}</span>
             </div>
             <div className={styles.totalRow}>
