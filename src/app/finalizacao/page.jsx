@@ -1,190 +1,103 @@
 "use client"
-import { useState, useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import SiteHeader from "@/components/Header/page";
 import styles from "./finalizacao.module.css";
 
-// Garante que qualquer valor recebido da API seja tratado como número válido
-const normalizarValorMonetario = (valor) => {
-  const numero = Number(valor);
-  return Number.isNaN(numero) ? 0 : numero;
-};
+const resolveTicketInfo = async (sessao) => {
+    if (!sessao) return { preco: 0, tipo: "Padrão" };
 
-// Busca o preço correto do ingresso considerando o vínculo com a sessão
-const obterDetalhesIngresso = async (sessao) => {
-  const descricaoPadrao = sessao?.tipo || "Ingresso";
-  if (!sessao) {
-    return { preco: 0, descricao: descricaoPadrao };
-  }
-
-  if (sessao?.ingresso?.preco !== undefined) {
-    return {
-      preco: normalizarValorMonetario(sessao.ingresso.preco),
-      descricao: sessao.ingresso.tipo || descricaoPadrao
-    };
-  }
-
-  if (sessao?.ingressoId) {
-    try {
-      const ingressoResponse = await fetch(`http://localhost:5000/ingressos/${sessao.ingressoId}`);
-      if (ingressoResponse.ok) {
-        const ingressoData = await ingressoResponse.json();
-        return {
-          preco: normalizarValorMonetario(ingressoData?.preco),
-          descricao: ingressoData?.tipo || descricaoPadrao
-        };
-      }
-    } catch (error) {
-      console.error("Erro ao buscar ingresso por ID:", error);
+    if (sessao.ingresso?.preco !== undefined) {
+        return { preco: Number(sessao.ingresso.preco), tipo: sessao.ingresso.tipo || sessao.tipo };
     }
-  }
+    if (sessao.preco !== undefined) {
+        return { preco: Number(sessao.preco), tipo: sessao.tipo };
+    }
 
-  if (sessao?.preco !== undefined) {
-    return { preco: normalizarValorMonetario(sessao.preco), descricao: descricaoPadrao };
-  }
-
-  if (sessao?.tipo) {
     try {
-      const ingressoResponse = await fetch(`http://localhost:5000/ingressos?tipo=${encodeURIComponent(sessao.tipo)}`);
-      if (ingressoResponse.ok) {
-        const ingressosData = await ingressoResponse.json();
-        const ingressoEncontrado = Array.isArray(ingressosData) ? ingressosData[0] : ingressosData;
-        if (ingressoEncontrado) {
-          return {
-            preco: normalizarValorMonetario(ingressoEncontrado?.preco),
-            descricao: ingressoEncontrado?.tipo || descricaoPadrao
-          };
+        let url = "";
+        if (sessao.ingressoId) url = `http://localhost:5000/ingressos/${sessao.ingressoId}`;
+        else if (sessao.tipo) url = `http://localhost:5000/ingressos?tipo=${encodeURIComponent(sessao.tipo)}`;
+
+        if (url) {
+            const res = await fetch(url);
+            if (res.ok) {
+                const data = await res.json();
+                const item = Array.isArray(data) ? data[0] : data;
+                return { preco: Number(item?.preco || 0), tipo: item?.tipo || sessao.tipo };
+            }
         }
-      }
-    } catch (error) {
-      console.error("Erro ao buscar ingresso por tipo:", error);
+    } catch (err) {
+        console.error("Erro ao buscar preço:", err);
     }
-  }
 
-  return { preco: 0, descricao: descricaoPadrao };
+    return { preco: 0, tipo: "Padrão" };
 };
 
 export default function FinalizacaoPage() {
-  const [ingressos, setIngressos] = useState([]);
-  const [lanches, setLanches] = useState([]);
-  const [sessaoInfo, setSessaoInfo] = useState(null);
-  const [alimentos, setAlimentos] = useState([]);
-  const [carregando, setCarregando] = useState(true);
-  const taxaServico = 5;
+    const [resumo, setResumo] = useState({ ingressos: [], lanches: [], total: 0 });
+    const [loading, setLoading] = useState(true);
+    const taxaServico = 5;
 
-  useEffect(() => {
-    const carregarDados = async () => {
-      try {
-        // Recupera dados dos ingressos/sessão selecionada
-        const sessaoData = JSON.parse(sessionStorage.getItem("cineflow-assentos-selecionados")) || {};
-        setSessaoInfo(sessaoData);
-
-        // Formata os ingressos a partir dos assentos selecionados
-        if (sessaoData.assentos && sessaoData.assentos.length > 0) {
-          try {
-            const response = await fetch(`http://localhost:5000/sessoes/${sessaoData.sessaoId}`);
-            if (!response.ok) {
-              throw new Error("Não foi possível carregar a sessão selecionada.");
-            }
-            const sessao = await response.json();
-            const detalhesIngresso = await obterDetalhesIngresso(sessao);
-            const dataHoraSessao = sessao?.dataHora || sessaoData.dataHora;
-            const dataHoraObjeto = dataHoraSessao ? new Date(dataHoraSessao) : null;
-            const dataFormatada = dataHoraObjeto ? dataHoraObjeto.toLocaleDateString("pt-BR") : "--";
-            const horaFormatada = dataHoraObjeto
-              ? dataHoraObjeto.toLocaleTimeString("pt-BR", {
-                  hour: "2-digit",
-                  minute: "2-digit"
-                })
-              : "--";
+    useEffect(() => {
+        const loadData = async () => {
+            const sessaoStorage = JSON.parse(sessionStorage.getItem("cineflow-assentos-selecionados")) || {};
+            const carrinhoStorage = JSON.parse(sessionStorage.getItem("cineflow-carrinho")) || {};
             
-            const ingressosFormatados = sessaoData.assentos.map((assento) => ({
-              nomeFilme: sessaoData.filmeNome || "Filme",
-              data: dataFormatada,
-              hora: horaFormatada,
-              sala: sessao?.salaId ?? sessaoData.salaId ?? "N/A",
-              assento: assento.posicao || assento.id,
-              tipoSessao: sessao?.tipo || "",
-              tipoIngresso: detalhesIngresso.descricao,
-              preco: detalhesIngresso.preco
+            const [sessaoRes, alimentosRes] = await Promise.all([
+                sessaoStorage.sessaoId ? fetch(`http://localhost:5000/sessoes/${sessaoStorage.sessaoId}`) : null,
+                fetch("http://localhost:5000/alimentos")
+            ]);
+            
+            const sessao = sessaoRes?.ok ? await sessaoRes.json() : null;
+            const alimentos = alimentosRes?.ok ? await alimentosRes.json() : [];
+
+            const ticketInfo = await resolveTicketInfo(sessao);
+            const dataObj = new Date(sessao?.dataHora || sessaoStorage.dataHora || Date.now());
+            
+            const listaIngressos = (sessaoStorage.assentos || []).map(assento => ({
+                filme: sessaoStorage.filmeNome || "Filme",
+                data: dataObj.toLocaleDateString("pt-BR"),
+                hora: dataObj.toLocaleTimeString("pt-BR", { hour: "2-digit", minute: "2-digit" }),
+                sala: sessao?.salaId || sessaoStorage.salaId || "N/A",
+                assento: assento.posicao || assento.id,
+                tipo: ticketInfo.tipo,
+                preco: ticketInfo.preco
             }));
-            
-            setIngressos(ingressosFormatados);
-          } catch (error) {
-            console.error("Erro ao carregar preço da sessão:", error);
-          }
-        }
 
-        // Busca os alimentos da API
-        try {
-          const response = await fetch("http://localhost:5000/alimentos");
-          const alimentosData = await response.json();
-          setAlimentos(alimentosData);
+            const listaLanches = Object.entries(carrinhoStorage).map(([id, qtd]) => {
+                const item = alimentos.find(a => a.id === Number(id));
+                if (!item || qtd <= 0) return null;
+                return { ...item, quantidade: qtd, subtotal: item.preco * qtd };
+            }).filter(Boolean);
 
-          // Recupera dados dos lanches selecionados do carrinho
-          const carrinhoJSON = sessionStorage.getItem("cineflow-carrinho");
-          if (carrinhoJSON) {
-            try {
-              const carrinho = JSON.parse(carrinhoJSON);
-              
-              // Formata os lanches do carrinho com os dados dos alimentos
-              const lanchesFormatados = Object.entries(carrinho)
-                .filter(([id, quantidade]) => quantidade > 0)
-                .map(([id, quantidade]) => {
-                  const alimento = alimentosData.find(a => a.id === parseInt(id));
-                  return {
-                    id: id,
-                    nome: alimento?.nome || "Produto",
-                    quantidade: quantidade,
-                    preco: alimento?.preco || 0
-                  };
-                });
-              
-              setLanches(lanchesFormatados);
-            } catch (error) {
-              console.error("Erro ao processar carrinho:", error);
-            }
-          }
-        } catch (error) {
-          console.error("Erro ao carregar alimentos:", error);
-        }
-      } finally {
-        setCarregando(false);
-      }
-    };
+            const totalIngressos = listaIngressos.reduce((acc, i) => acc + i.preco, 0);
+            const totalLanches = listaLanches.reduce((acc, i) => acc + i.subtotal, 0);
 
-    carregarDados();
-  }, []);
+            setResumo({
+                ingressos: listaIngressos,
+                lanches: listaLanches,
+                subIngressos: totalIngressos,
+                subLanches: totalLanches,
+                totalGeral: totalIngressos + totalLanches + taxaServico,
+                backLink: sessaoStorage.sessaoId ? `/sessoes/${sessaoStorage.sessaoId}` : "/Filmes"
+            });
+            setLoading(false);
+        };
 
-  const calcularTotalIngressos = () => {
-    return ingressos.reduce((total, ingresso) => total + (ingresso.preco || 0), 0);
-  };
+        loadData();
+    }, []);
 
-  const calcularTotalLanches = () => {
-    return lanches.reduce((total, lanche) => total + (lanche.preco * lanche.quantidade || 0), 0);
-  };
+    if (loading) {
+        return (
+            <div className={styles.container}>
+                <SiteHeader backHref="/Filmes" backLabel="VOLTAR" />
+                <div className={styles.content}>
+                    <p style={{ textAlign: "center", color: "white", marginTop: 50 }}>Carregando pedido...</p>
+                </div>
+            </div>
+        );
+    }
 
-  const totalIngressos = calcularTotalIngressos();
-  const totalLanches = calcularTotalLanches();
-  const totalGeral = totalIngressos + totalLanches + taxaServico;
-
-  const handlePagar = () => {
-    // Aqui você pode adicionar lógica de pagamento se necessário
-    // Por enquanto, apenas redireciona para a página de pedido gerado
-    window.location.href = "/PedidoGerado";
-  };
-
-  if (carregando) {
-    return (
-      <div className={styles.container}>
-        <SiteHeader backHref="/Filmes" backLabel="VOLTAR" />
-        <div className={styles.content}>
-          <p style={{ color: "white", textAlign: "center", marginTop: "50px" }}>
-            Carregando pedido...
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className={styles.container}>
