@@ -200,33 +200,19 @@ export default function FinalizacaoPage() {
                     )}
                 </section>
 
-        {/* Container de Total */}
-        <section className={styles.totalSection}>
-          <h2 className={styles.sectionTitle}>💳 RESUMO FINANCEIRO</h2>
-          <div className={styles.totalContainer}>
-            <div className={styles.totalRow}>
-              <span>Ingressos:</span>
-              <span>R$ {totalIngressos.toFixed(2)}</span>
+                <section className={styles.totalSection}>
+                    <h2 className={styles.sectionTitle}>💳 RESUMO FINANCEIRO</h2>
+                    <div className={styles.totalContainer}>
+                        <div className={styles.totalRow}><span>Ingressos:</span><span>R$ {resumo.subIngressos.toFixed(2)}</span></div>
+                        <div className={styles.totalRow}><span>Lanches:</span><span>R$ {resumo.subLanches.toFixed(2)}</span></div>
+                        <div className={styles.totalRow}><span>Taxa de Serviço:</span><span>R$ {taxaServico.toFixed(2)}</span></div>
+                        <div className={styles.totalRowFinal}><span>TOTAL A PAGAR:</span><span>R$ {resumo.totalGeral.toFixed(2)}</span></div>
+                    </div>
+                    <button onClick={() => window.location.href = "/PedidoGerado"} className={styles.pagarButton}>
+                        PAGAR
+                    </button>
+                </section>
             </div>
-            <div className={styles.totalRow}>
-              <span>Lanches:</span>
-              <span>R$ {totalLanches.toFixed(2)}</span>
-            </div>
-            <div className={styles.totalRow}>
-              <span>Taxa de Serviço:</span>
-              <span>R$ {taxaServico.toFixed(2)}</span>
-            </div>
-            <div className={styles.totalRowFinal}>
-              <span>TOTAL A PAGAR:</span>
-              <span>R$ {totalGeral.toFixed(2)}</span>
-            </div>
-          </div>
-
-          <button onClick={handlePagar} className={styles.pagarButton}>
-            PAGAR
-          </button>
-        </section>
-      </div>
-    </div>
-  );
+        </div>
+    );
 }
