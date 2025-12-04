@@ -1,7 +1,7 @@
 "use client"
 import { useState, useEffect } from 'react'
-import Button from './Button'
-import ProfileLink from './ProfileLink'
+import Button from '@/components/Button/page.jsx'
+import ProfileLink from '@/components/ProfileLink/page.jsx'
 import styles from './SiteHeader.module.css'
 
 export default function SiteHeader({ 
