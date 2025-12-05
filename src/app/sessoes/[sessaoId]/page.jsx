@@ -4,7 +4,7 @@ import axios from "axios";
 import styles from "./page.module.css";
 import Button from "@/components/Button/page";
 import SiteHeader from "@/components/Header/page";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const parseSeat = (posicao = "") => {
     const match = posicao.match(/^([A-Za-z]+)(\d+)$/);
@@ -91,8 +91,9 @@ const initialPageState = {
     error: ""
 };
 
-export default function AssentosSessao({ params }) {
+export default function AssentosSessao() {
     const router = useRouter();
+    const params = useParams();
     const sessaoId = params?.sessaoId;
 
     const [pageState, setPageState] = useState(initialPageState);

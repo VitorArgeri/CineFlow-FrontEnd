@@ -51,7 +51,7 @@ export default function SiteHeader({
                         <div className={styles.userArea}>
                             <ProfileLink />
                             {isLogged && (
-                                <Button onClick={handleLogout} className={styles.logoutBtn}>
+                                <Button onClick={handleLogout}>
                                     LOGOUT
                                 </Button>
                             )}

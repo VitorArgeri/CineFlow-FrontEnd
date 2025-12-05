@@ -1,13 +1,18 @@
+"use client";
 import React from "react";
 import Image from "next/image";
 import styles from "./pedidogerado.module.css";
-import SiteHeader from "@/components/Header/page";
+import Button from "@/components/Button/page";
 
 export default function Page() {
+  const handleVoltarInicio = () => {
+    sessionStorage.removeItem("cineflow-assentos-selecionados");
+    sessionStorage.removeItem("cineflow-carrinho");
+    window.location.href = "/";
+  };
+
   return (
     <div className={styles.container}>
-      <SiteHeader backHref="/bomboniere" />
-
       
       <h1 className={styles.successText}>PEDIDO REALIZADO COM SUCESSO !</h1>
 
@@ -40,6 +45,12 @@ export default function Page() {
 
       
       <h2 className={styles.thanks}>OBRIGADA E APROVEITE A SESSÃO !</h2>
+
+      <div className={styles.homeButtonWrapper}>
+        <Button onClick={handleVoltarInicio} className={styles.homeButton}>
+          VOLTAR PARA A PÁGINA INICIAL
+        </Button>
+      </div>
     </div>
   );
 }

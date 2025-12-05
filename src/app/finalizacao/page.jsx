@@ -79,32 +79,70 @@ carregar();
 }, []);
 
 const handleCheckout = async () => {
+const sessaoStored = sessionStorage.getItem("cineflow-assentos-selecionados");
+if (!sessaoStored) {
+alert("Selecione uma sessão antes de finalizar o pedido.");
+window.location.href = "/Filmes";
+return;
+}
+
 setLoading(true);
+
 try {
-const sessaoData = JSON.parse(sessionStorage.getItem("cineflow-assentos-selecionados"));
+const sessaoData = JSON.parse(sessaoStored) || {};
+const possuiAssentos = Array.isArray(sessaoData.assentos) && sessaoData.assentos.length > 0;
+
+if (!sessaoData.sessaoId || !possuiAssentos) {
+alert("Não foi possível identificar os assentos selecionados. Escolha novamente a sessão.");
+setLoading(false);
+window.location.href = "/Filmes";
+return;
+}
+
 const carrinhoData = JSON.parse(sessionStorage.getItem("cineflow-carrinho")) || {};
+const userIdRaw = localStorage.getItem("userId");
+const parsedUserId = userIdRaw && !Number.isNaN(Number(userIdRaw)) ? Number(userIdRaw) : undefined;
+const token = localStorage.getItem("userToken");
+
+const assentosIds = sessaoData.assentos
+	.map((assento) => assento?.id)
+	.filter((id) => id !== undefined && id !== null);
+
+const alimentosIds = Object.entries(carrinhoData)
+	.filter(([, qtd]) => Number(qtd) > 0)
+	.flatMap(([id, qtd]) => Array(Number(qtd)).fill(id));
 
 const payload = {
-sessaoId: Number(sessaoData?.sessaoId),
-userId: Number(localStorage.getItem("userId")) || null,
-assentosIds: (sessaoData?.assentos || []).map(a => Number(a.id)),
-alimentosIds: Object.entries(carrinhoData).flatMap(([id, qtd]) => Array(Number(qtd)).fill(Number(id)))
+sessaoId: sessaoData.sessaoId,
+userId: parsedUserId,
+assentosIds,
+alimentosIds
 };
+
+const headers = { "Content-Type": "application/json" };
+if (token) headers.Authorization = `Bearer ${token}`;
 
 const res = await fetch("http://localhost:5000/pedidos", {
 method: "POST",
-headers: { "Content-Type": "application/json" },
+headers,
 body: JSON.stringify(payload)
 });
 
-if (!res.ok) throw new Error();
+if (!res.ok) {
+let message = "Erro ao finalizar pedido.";
+try {
+const data = await res.json();
+if (data?.message) message = data.message;
+} catch (_) {}
+throw new Error(message);
+}
 
 sessionStorage.removeItem("cineflow-assentos-selecionados");
 sessionStorage.removeItem("cineflow-carrinho");
 window.location.href = "/PedidoGerado";
 
-} catch {
-alert("Erro ao finalizar pedido.");
+} catch (error) {
+alert(error?.message || "Erro ao finalizar pedido.");
 setLoading(false);
 }
 };

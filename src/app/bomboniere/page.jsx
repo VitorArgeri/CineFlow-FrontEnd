@@ -145,6 +145,16 @@ export default function App() {
             ? `ASSENTOS: ${pedidoInfo.assentos?.map(seat => seat.posicao || seat.id).join(", ") || pedidoInfo.quantidade} | INGRESSOS: ${pedidoInfo.quantidade}`
             : "ASSENTOS: -- | INGRESSOS: --"
 
+    const itensSelecionados = alimentos.filter(alimento => (carrinho[alimento.id] || 0) > 0)
+    const totalCarrinho = alimentos.reduce((total, alimento) => (
+        total + (alimento.preco * (carrinho[alimento.id] || 0))
+    ), 0)
+
+    const finalizarPedido = () => {
+        sessionStorage.setItem("cineflow-carrinho", JSON.stringify(carrinho))
+        window.location.href = "/finalizacao"
+    }
+
     return (
         <div className={styles.container}>
                 <SiteHeader backHref="/Filmes" />
@@ -241,11 +251,11 @@ export default function App() {
                     })}
                 </div>
 
-                {Object.values(carrinho).some(quantidade => quantidade > 0) && (
-                    <div className={styles.carrinhoResumo}>
-                        <h2 className={styles.carrinhoTitulo}>Resumo do Pedido</h2>
+                <div className={styles.carrinhoResumo}>
+                    <h2 className={styles.carrinhoTitulo}>Resumo do Pedido</h2>
+                    {itensSelecionados.length > 0 ? (
                         <div className={styles.carrinhoItens}>
-                            {alimentos.filter(alimento => carrinho[alimento.id] > 0).map(alimento => (
+                            {itensSelecionados.map(alimento => (
                                 <div key={alimento.id} className={styles.carrinhoItem}>
                                     <span className={styles.carrinhoItemNome}>
                                         {alimento.nome} x{carrinho[alimento.id]}
@@ -256,28 +266,19 @@ export default function App() {
                                 </div>
                             ))}
                         </div>
-                        <div className={styles.carrinhoTotal}>
-                            <strong>
-                                Total: R$ {
-                                    alimentos.reduce((total, alimento) => {
-                                        return total + (alimento.preco * (carrinho[alimento.id] || 0))
-                                    }, 0).toFixed(2)
-                                }
-                            </strong>
-                        </div>
-                        <button 
-                            className={styles.finalizarBtn}
-                            onClick={() => {
-                                // Salva o carrinho no sessionStorage
-                                sessionStorage.setItem("cineflow-carrinho", JSON.stringify(carrinho));
-                                // Redireciona para a finalização
-                                window.location.href = "/finalizacao";
-                            }}
-                        >
-                            Finalizar Pedido
-                        </button>
+                    ) : (
+                        <p className={styles.carrinhoVazio}>Nenhum lanche selecionado</p>
+                    )}
+                    <div className={styles.carrinhoTotal}>
+                        <strong>Total: R$ {totalCarrinho.toFixed(2)}</strong>
                     </div>
-                )}
+                    <button 
+                        className={styles.finalizarBtn}
+                        onClick={finalizarPedido}
+                    >
+                        Finalizar Pedido
+                    </button>
+                </div>
             </main>
         </div>
     );

@@ -3,7 +3,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import styles from "./page.module.css";
 import SiteHeader from "@/components/Header/page";
-import { useRouter } from "next/navigation";
+import { useParams, useRouter } from "next/navigation";
 
 const defaultFormValues = {
     nome: "",
@@ -59,7 +59,8 @@ const initialPageState = {
     selectedDate: null
 };
 
-export default function DetalhesFilme({ params }) {
+export default function DetalhesFilme() {
+    const params = useParams();
     const router = useRouter();
     const movieId = params?.id;
     const [pageState, setPageState] = useState(initialPageState);
