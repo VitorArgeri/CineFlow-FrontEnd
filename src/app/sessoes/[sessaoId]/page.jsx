@@ -46,6 +46,7 @@ const buildSeats = (assentos = [], registros = [], salaId) => {
 
             return {
                 ...assento,
+                reservado: estaNoRegistro,
                 ocupado: estaNoRegistro || statusOcupado
             };
         })
@@ -111,7 +112,7 @@ export default function AssentosSessao() {
                 const [filmeResponse, assentosResponse, registrosResponse] = await Promise.all([
                     axios.get(`http://localhost:5000/filmes/${sessaoData.filmeId}`),
                     axios.get(`http://localhost:5000/assentos?salaId=${sessaoData.salaId}`),
-                    axios.get(`http://localhost:5000/registroSessoes?sessaoId=${sessaoId}`).catch(() => ({ data: [] }))
+                    axios.get(`http://localhost:5000/registros-sessao?sessaoId=${sessaoId}`).catch(() => ({ data: [] }))
                 ]);
 
                 setPageState({
@@ -142,7 +143,12 @@ export default function AssentosSessao() {
     const detalheFilmeHref = film ? `/${film.id}` : "/Filmes";
     const assentosSelecionados = seats.filter((assento) => selectedSeats.includes(assento.id));
 
-    const getSeatLabel = (assento) => (assento.ocupado || selectedSeats.includes(assento.id) ? "X" : "");
+        const getSeatLabel = (assento) => {
+            if (assento.reservado) return "OC";
+            if (selectedSeats.includes(assento.id)) return "X";
+            if (assento.ocupado) return "X";
+            return "";
+        };
 
     const handleContinue = () => {
         if (assentosSelecionados.length === 0) return;
@@ -211,7 +217,7 @@ export default function AssentosSessao() {
                         <button
                             key={assento.id}
                             type="button"
-                            className={`${styles.seat} ${assento.ocupado ? styles.seatOccupied : styles.seatFree} ${selectedSeats.includes(assento.id) ? styles.seatSelected : ""
+                            className={`${styles.seat} ${assento.reservado ? styles.seatBooked : assento.ocupado ? styles.seatOccupied : styles.seatFree} ${selectedSeats.includes(assento.id) ? styles.seatSelected : ""
                                 }`}
                             onClick={() => toggleSeat(assento)}
                             disabled={assento.ocupado}
@@ -235,6 +241,10 @@ export default function AssentosSessao() {
                 <div>
                     <span className={`${styles.legendBadge} ${styles.legendOccupied}`}></span>
                     <p>OCUPADO</p>
+                </div>
+                <div>
+                    <span className={`${styles.legendBadge} ${styles.legendBooked}`}></span>
+                    <p>RESERVADO</p>
                 </div>
             </div>
 

@@ -1,6 +1,7 @@
 "use client";
 import React, { useState, useEffect } from "react";
 import SiteHeader from "@/components/Header/page";
+import { useRouter } from "next/navigation";
 import styles from "./finalizacao.module.css";
 
 const TAXA_SERVICO = 5;
@@ -27,9 +28,47 @@ return { preco: Number(item?.preco || 0), tipo: item?.tipo || sessao.tipo };
 return { preco: 0, tipo: "Padrão" };
 };
 
+const registrarAssentos = async ({ sessaoId, assentosIds, 
+	
+	pedidoId, headers }) => {
+		
+	if (!sessaoId || !assentosIds?.length || !pedidoId) return;
+
+	await Promise.all(
+		assentosIds.map((assentoId) =>
+			fetch("http://localhost:5000/registros-sessao", {
+				method: "POST",
+				headers,
+				body: JSON.stringify({ sessaoId, assentoId, pedidoId })
+			}).then((res) => {
+				if (!res.ok) throw new Error();
+				return res;
+			}).catch((error) => {
+				console.error("Erro ao registrar assento", assentoId, error);
+				return null;
+			})
+		)
+	);
+};
+
 export default function FinalizacaoPage() {
+const router = useRouter();
 const [resumo, setResumo] = useState({ ingressos: [], lanches: [], total: 0, linkVoltar: "/" });
 const [loading, setLoading] = useState(true);
+
+const limparProgressoPedido = () => {
+	try {
+		sessionStorage.removeItem("cineflow-assentos-selecionados");
+		sessionStorage.removeItem("cineflow-carrinho");
+	} catch (_) {
+		// noop
+	}
+};
+
+const handleCancelarPedido = () => {
+	limparProgressoPedido();
+	router.push("/");
+};
 
 useEffect(() => {
 const carregar = async () => {
@@ -82,7 +121,7 @@ const handleCheckout = async () => {
 const sessaoStored = sessionStorage.getItem("cineflow-assentos-selecionados");
 if (!sessaoStored) {
 alert("Selecione uma sessão antes de finalizar o pedido.");
-window.location.href = "/Filmes";
+router.push("/Filmes");
 return;
 }
 
@@ -95,7 +134,7 @@ const possuiAssentos = Array.isArray(sessaoData.assentos) && sessaoData.assentos
 if (!sessaoData.sessaoId || !possuiAssentos) {
 alert("Não foi possível identificar os assentos selecionados. Escolha novamente a sessão.");
 setLoading(false);
-window.location.href = "/Filmes";
+router.push("/Filmes");
 return;
 }
 
@@ -105,12 +144,37 @@ const parsedUserId = userIdRaw && !Number.isNaN(Number(userIdRaw)) ? Number(user
 const token = localStorage.getItem("userToken");
 
 const assentosIds = sessaoData.assentos
-	.map((assento) => assento?.id)
-	.filter((id) => id !== undefined && id !== null);
+	.map((assento) => Number(assento?.id))
+	.filter((id) => !Number.isNaN(id));
+
+if (!assentosIds.length) {
+alert("Nenhum assento válido foi selecionado. Escolha novamente a sessão.");
+setLoading(false);
+router.push(`/${sessaoData.filmeId || ""}`);
+return;
+}
+
+const registrosRes = await fetch(`http://localhost:5000/registros-sessao?sessaoId=${sessaoData.sessaoId}`);
+if (registrosRes.ok) {
+	const registros = await registrosRes.json();
+	const ocupados = new Set(
+		(Array.isArray(registros) ? registros : [])
+			.map((registro) => Number(registro?.assentoId))
+			.filter((id) => !Number.isNaN(id))
+	);
+
+	if (assentosIds.some((id) => ocupados.has(id))) {
+		alert("Alguns dos assentos selecionados já foram escolhidos. Volte e escolha outros.");
+		setLoading(false);
+		router.push(`/sessoes/${sessaoData.sessaoId}`);
+		return;
+	}
+}
 
 const alimentosIds = Object.entries(carrinhoData)
 	.filter(([, qtd]) => Number(qtd) > 0)
-	.flatMap(([id, qtd]) => Array(Number(qtd)).fill(id));
+	.flatMap(([id, qtd]) => Array(Number(qtd)).fill(Number(id)))
+	.filter((id) => !Number.isNaN(id));
 
 const payload = {
 sessaoId: sessaoData.sessaoId,
@@ -128,20 +192,31 @@ headers,
 body: JSON.stringify(payload)
 });
 
-if (!res.ok) {
-let message = "Erro ao finalizar pedido.";
+let respostaJson = null;
 try {
-const data = await res.json();
-if (data?.message) message = data.message;
-} catch (_) {}
+	respostaJson = await res.json();
+} catch (_) {
+	respostaJson = null;
+}
+
+if (!res.ok) {
+const message = respostaJson?.message || "Erro ao finalizar pedido.";
 throw new Error(message);
 }
 
-sessionStorage.removeItem("cineflow-assentos-selecionados");
-sessionStorage.removeItem("cineflow-carrinho");
-window.location.href = "/PedidoGerado";
+const pedidoId = respostaJson?.id || respostaJson?.pedidoId || respostaJson?.pedido?.id;
+
+if (!pedidoId) {
+throw new Error("Não foi possível identificar o pedido gerado. Tente novamente.");
+}
+
+await registrarAssentos({ sessaoId: sessaoData.sessaoId, assentosIds, pedidoId, headers });
+
+limparProgressoPedido();
+router.push("/PedidoGerado");
 
 } catch (error) {
+console.error("Erro ao finalizar pedido", error);
 alert(error?.message || "Erro ao finalizar pedido.");
 setLoading(false);
 }
@@ -216,6 +291,10 @@ resumo.lanches.map((item, i) => (
 
 <button onClick={handleCheckout} className={styles.pagarButton}>
 CONFIRMAR PAGAMENTO
+</button>
+
+<button type="button" onClick={handleCancelarPedido} className={styles.cancelButton}>
+Cancelar e voltar ao início
 </button>
 </section>
 </div>

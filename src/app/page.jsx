@@ -1,9 +1,19 @@
+"use client";
 import React from "react";
 import Link from "next/link";
 import styles from "./page.module.css";
 import ProfileLink from "@/components/ProfileLink/page";
 
 export default function Page() {
+  const handleStartPedido = () => {
+    try {
+      sessionStorage.removeItem("cineflow-assentos-selecionados");
+      sessionStorage.removeItem("cineflow-carrinho");
+    } catch (_) {
+      // ignore storage errors
+    }
+  };
+
   return (
     <div className={styles.container}>
       <div className={styles.profileWrapper}>
@@ -20,7 +30,7 @@ export default function Page() {
       </div>
 
       
-      <Link href="/Filmes" className={styles.button}>
+      <Link href="/Filmes" className={styles.button} onClick={handleStartPedido}>
         ESCOLHER FILMES
       </Link>
 
